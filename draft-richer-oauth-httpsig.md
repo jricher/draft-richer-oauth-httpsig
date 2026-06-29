@@ -24,9 +24,9 @@ normative:
        title: Recommendations for Secure Use of Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)
        date: May 2015
        author:
-         - 
+         -
            ins: Y. Sheffer
-         - 
+         -
            ins: R. Holz
          -
            ins: P. Saint-Andre
@@ -61,14 +61,14 @@ HTTP Message Signatures to bind access tokens to keys held by OAuth 2.0 clients.
 The OAuth 2.0 framework provides methods for clients to get delegated access tokens from an
 authorization server for accessing protected resources. The access tokens at the center
 of OAuth 2.0 can be bound to a variety of different mechanisms, including bearer tokens,
-mutual TLS, or other presentation mechanisms. 
+mutual TLS, or other presentation mechanisms.
 
 Bearer tokens are simple to implement but also have the significant security downside of
-allowing anyone who sees the access token to use that token. This extension defines a token type 
-that binds the token to a presentation key known to the client. The client uses 
+allowing anyone who sees the access token to use that token. This extension defines a token type
+that binds the token to a presentation key known to the client. The client uses
 [HTTP Message Signatures](I-D.ietf-httpbis-message-signatures)
 to sign requests using its key, thereby proving its right to present the
-associated access token. 
+associated access token.
 
 ## Terminology
 
@@ -107,8 +107,8 @@ The client MUST include an HTTP Message Signature that covers, at minimum:
  - The request target of the RS being called
  - The `Host` header of the RS being called
  - The `Authorization` header containing the access token value.
- 
-The signature parameters MUST include a `created` signature parameter. The RS SHOULD use this field to ensure freshness of the signed request, appropriate to the API being protected. 
+
+The signature parameters MUST include a `created` signature parameter. The RS SHOULD use this field to ensure freshness of the signed request, appropriate to the API being protected.
 
 The client MUST NOT include an `alg` signature parameter, since the algorithm is determined by the client's registered key. The client MUST include the `keyid` signature parameter set to the value returned in the token response {{token}}.
 
@@ -160,9 +160,9 @@ All requests have to be over TLS or equivalent as per {{BCP195}}.
 \[\[ TBD: There are a lot of privacy considerations to add. \]\]
 
 --- back
-   
+
 # Document History {#history}
 
-- -00 
+- -00
     - Initial individual draft.
 
