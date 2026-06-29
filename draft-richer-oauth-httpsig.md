@@ -1,6 +1,6 @@
 ---
 title: 'OAuth Proof of Possession Tokens with HTTP Message Signatures'
-docname: draft-richer-oauth-httpsig
+docname: draft-richer-oauth-httpsig-latest
 category: std
 
 ipr: trust200902
