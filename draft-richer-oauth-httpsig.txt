@@ -4,8 +4,8 @@
 
 OAUTH                                                     J. Richer, Ed.
 Internet-Draft                                                   MongoDB
-Intended status: Standards Track                            29 June 2026
-Expires: 31 December 2026
+Intended status: Standards Track                             1 July 2026
+Expires: 2 January 2027
 
 
      OAuth Proof of Possession Tokens with HTTP Message Signatures
@@ -43,7 +43,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 31 December 2026.
+   This Internet-Draft will expire on 2 January 2027.
 
 Copyright Notice
 
@@ -63,14 +63,29 @@ Table of Contents
 
    1.  Introduction
      1.1.  Terminology
-   2.  Token Response
-   3.  Presenting an HTTP Message Signature Bound Access Token
-   4.  Acknowledgements
-   5.  IANA Considerations
-   6.  Security Considerations
-   7.  Privacy Considerations
-   8.  Normative References
+   2.  Requesting an HTTP Message Signature Bound Access Token
+     2.1.  Pre-Registration of Keys
+     2.2.  Token Request Key Introduction
+     2.3.  Token Request
+   3.  Issuing an HTTP Message Signature Bound Access Token
+     3.1.  Encoding Confirmation in a JWT
+     3.2.  Returning Confirmation in Token Introspection
+   4.  Presenting an HTTP Message Signature Bound Access Token
+   5.  Validating an HTTP Message Signature Bound Access Token Request
+   6.  Acknowledgements
+   7.  IANA Considerations
+   8.  Security Considerations
+   9.  Privacy Considerations
+   10. References
+     10.1.  Normative References
+     10.2.  Informative References
    Appendix A.  Document History
+   Appendix B.  Potential Other Work
+     B.1.  Client Authentication
+     B.2.  AS Responses
+     B.3.  Non-Repudiation of Requests
+     B.4.  PAR Key Introduction
+     B.5.  Accept-Signature Support
    Author's Address
 
 1.  Introduction
@@ -83,11 +98,22 @@ Table of Contents
 
    Bearer tokens are simple to implement but also have the significant
    security downside of allowing anyone who sees the access token to use
-   that token.  This extension defines a token type that binds the token
-   to a presentation key known to the client.  The client uses HTTP
-   Message Signatures (I-D.ietf-httpbis-message-signatures) to sign
-   requests using its key, thereby proving its right to present the
-   associated access token.
+   that token.  [HTTPSIG] defines a generic mechanism that is used to
+   sign HTTP requests and responses.
+
+   This specification defines means to bind access tokens to a key held
+   by the client, a token type value and token response for indicating
+   that a token is meant to be used with [HTTPSIG] presentation, and a
+   method for presenting bound access tokens in HTTP requests using
+   [HTTPSIG].
+
+   This work complements and builds on experience with [DPOP] and
+   [MTLS], as well as implementations of
+   [I-D.ietf-oauth-signed-http-request], a spiritual predecessor to this
+   specification and other forms of OAuth proof-of-possession work.
+
+   [[ Editor's note: we want to give developers clear guidance on when
+   to use HTTPSig vs. DPoP vs. mTLS vs. Bearer vs. whatever else ]]
 
 1.1.  Terminology
 
@@ -104,66 +130,339 @@ Table of Contents
    character and leading spaces on wrapped lines are not part of the
    value.
 
-2.  Token Response
+2.  Requesting an HTTP Message Signature Bound Access Token
 
-   When the client makes an access token request, the AS associates the
-   generated access token with the client's registered key from the
-   client's jwks or jwks_uri field.  All presentations of this token at
-   any RS MUST contain an HTTP message signature as described in
-   Section 3.
+   To bind an access token to a key, the AS needs to know which key to
+   bind to which token.  This specification defines two common methods
+   depending on the needs of the client:
 
-   A bound access token MUST have a token_type value of httpsig.  The
-   response MUST contain a keyid value which indicates the key the
-   client MUST use when presenting the access token Section 3.  The
-   value of this keyid field MUST uniquely identify a key from the
-   client's registered key set by its kid value.
+   *  A static method that depends on key material available as part of
+      the client registration
+
+   *  A runtime method that allows a client to introduce key material
+      during the token request phase of [OAUTH]
+
+   As part of its registration, a client MUST indicate which method it
+   will use.
+
+   [[ Editor's note: do we want to add a client metadata parameter to
+   signal this, as well as an AS/RS metadata parmaeter to signal support
+   for each type? ]]
+
+   [[ Editor's note: Are there any other patterns of key introduction we
+   should cover?  I put PAR in the appendix as a note. ]]
+
+2.1.  Pre-Registration of Keys
+
+   A client pre-registering its keys for [HTTPSIG] binding MUST include
+   the key in its registered jwks value or make it available from its
+   jwks_uri endpoint.  The JWK MUST have a kid field and MUST indicate a
+   signing algorithm in its alg field.  The key ID for the public used
+   for HTTP Message Signature bound access tokens MUST be identified
+   using the httpsig_bound_access_token_kid field in the client's
+   metadata.
+
+   [[ Editor's note: do we want to have a client field for the signing
+   alg or just leave that to the key all the time?  I prefer to keep it
+   in the key. ]]
+
+   A pre-registered key MAY be a shared secret (such as for use in an
+   HMAC signature), but public key cryptography is RECOMMENDED.
+
+   Note that pre-registration can occur statically or dynamically (such
+   as by using [DYNREG]), as long as the key is associated with the
+   client's client_id before the token request is made.
+
+2.2.  Token Request Key Introduction
+
+   Instead of pre-registering a key, a client can introduce its key
+   during the token request in the same fashion as [DPOP].
+
+   The client MUST present its public key in the Signature-Key header
+   field.  The field is an HTTP Structured Field consisting of a Binary
+   value containing the bytes of the [JSON] serialized [JWK] form of the
+   key material.
+
+   The JWK MUST have a kid field.  The key MUST be a public key (and
+   neither a private key nor a shared secret key).  The JWK MUST have an
+   alg value that indicates a signature algorithm.
+
+   For example, the following JWK public key:
+
+   {
+       "kty": "OKP",
+       "use": "sig",
+       "crv": "Ed25519",
+       "kid": "j-0Ny45NWmqGq6GQ",
+       "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
+       "alg": "EdDSA"
+   }
+
+   Can be encoded to the following Signature-Key field value (this
+   example uses a compact JSON serialization that removes whitespace):
+
+  NOTE: '\' line wrapping per RFC 8792
+
+  Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
+    iwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2Vm\
+    USIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTN\
+    zIiwiYWxnIjoiRWREU0EifQ==:
+
+   [[ Editor's note: this is a really awkward way to encode a JWK.  We
+   could try to break apart the JSON but there's not a 1:1 map to HTTP
+   Structured Fields we can rely on.  We could just put the minified
+   JSON into a string but the double quotes would need to be escaped.
+   This is the least bad version I could come up with right now. ]]
+
+2.3.  Token Request
+
+   The presence of an HTTP Message Signature with the tag "httpsig-
+   oauth-token-request" indicates that the client is requesting a bound
+   token.  The client MUST include a message signature of the indicated
+   key.
+
+   Additionally, the client MUST calculate and include the digest of the
+   request body and include it as the Content-Digest header defined in
+   [DIGEST].
+
+   For example, a form-encoded request body consisting of:
+
+   NOTE: '\' line wrapping per RFC 8792
+
+   grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA\
+   &redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+
+   Would create the following Content-Digest header:
+
+  Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
+
+   A client using this method MUST sign the token endpoint request using
+   [HTTPSIG] with the appropriate key.  The covered components MUST
+   include:
+
+   *  @method the HTTP method of the request
+
+   *  @target-uri the full request URI of the request (note that this
+      includes the scheme, authority, path, and query)
+
+   *  content-digest the digest of the request body
+
+   If a signature key is presented at runtime as described in
+   Section 2.2, the covered components MUST include:
+
+   *  signature-key the encoded public key used to sign this request
+
+   The covered components MUST include the client's authentication, if
+   available.  If using HTTP Basic, this means including the
+   authorization field.
+
+   The signature MUST include the following parameters:
+
+   *  created a timestamp for signature creation; this MUST be within a
+      small number of seconds of issuance (e.g. 30 seconds to account
+      for clock skew)
+
+   *  nonce a random unique value that the AS can use to prevent
+      signature replay within the small validity time window
+
+   *  tag a string indicating that this is being used for requesting a
+      bound token, MUST be the value "httpsig-oauth-token-request"
+
+   *  keyid the kid value for the key to be used for binding the token;
+      if client uses pre-registered keys as in Section 2.1, the value
+      MUST match the httpsig_bound_access_token_kid value; if the key is
+      presented at runtime as in Section 2.2, the value MUST match the
+      kid of the JWK in the Signature-Key field
+
+   The signature algorithm MUST be derived from the indicated key.  The
+   alg signature parameter MUST NOT be used.
+
+   An example request to the token endpoint (using a runtime-provided
+   key here) can look like the following:
+
+   POST /token HTTP/1.1
+   Host: server.example.com
+   Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+   Content-Type: application/x-www-form-urlencoded
+   Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
+     iwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2Vm\
+     USIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTN\
+     zIiwiYWxnIjoiRWREU0EifQ==:
+   Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
+   Signature-Input: sig1=("@method" "@target-uri" "content-digest" \
+     "signature-key" "authorization");created=1618884473\
+     ;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCgefQ"\
+     ;nonce="b3k2pp5k7z-50gnX1b06";tag="httpsig-oauth-token-request"
+   Signature: sig1=:AWyxebrJ6u8CMi0B3TyX9G1G3XT45UW5zIn8mhsyXdmjTUtGS+1M\
+     XiydKv5z0GLCrMhVSFe691jF98DRNNSPAg==:
+
+   grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&\
+   redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+
+3.  Issuing an HTTP Message Signature Bound Access Token
+
+   The AS MUST validate the signature of the token request sent in
+   Section 2.3 against the identified key and the algorithm associated
+   with that key.
+
+   The request MUST fail with an error if any of the following occur:
+
+   *  The key named in kid cannot be found or is not associated with the
+      requesting client
+
+   *  There is more than one signature with the tag "httpsig-oauth-
+      token-request"
+
+   *  The created value of the signature is too far in the past
+
+   *  The nonce value is used more than once within the validity window
+      of the signature
+
+   When issuing an access token bound to a key using HTTP Message
+   Signatures, the AS associates the granted token with the key used in
+   the requesting signature.  All presentations of this token at any RS
+   MUST contain an HTTP message signature as described in Section 4.
+
+   An HTTP Message Signature bound access token MUST have a token_type
+   value of httpsig.
+
+   HTTP 200 OK
+   Content-Type: application/json
 
    {
        "access_token": "2340897.34j123-134uh2345n",
-       "token_type": "httpsig",
-       "keyid": "test-key-rsa-pss"
+       "token_type": "httpsig"
    }
 
-   [[ Editor's note: while this document deals only with using a pre-
-   registered key, it would be possible to have different key binding
-   mechanisms, such as the client presenting an ephemeral key during the
-   token request or the AS generating and assigning a key alongside the
-   token.  The WG needs to decide if this is in scope of this document
-   or not.  The presentation mechanisms would be the same. ]]
+   The client MUST associate this returned access token with the key
+   used to make the requst.
 
-3.  Presenting an HTTP Message Signature Bound Access Token
+   [[ Editor's note: we should define confirmation methods for access
+   tokens here, including JWT values and introspection response values
+   to allow the RS to verify the signature w/o the client's registration
+   information.  Leaving the following sections as placeholders. ]]
 
-   The algorithm and key used for the HTTP Message Signature are derived
-   from the client's registered information.  The key is taken from the
-   client's registered jwks or jwks_uri field, identified by the keyid
-   field of the token response Section 2.  The signature algorithm is
-   determined by the alg field of the identified key, following the
-   method for JSON Web Algorithm selection described in
-   [I-D.ietf-httpbis-message-signatures].
+3.1.  Encoding Confirmation in a JWT
 
-   The client MUST include the access token value in an Authorization
-   header using scheme HTTPSig.  Note that the scheme value HTTPSig is
-   not case sensitive.
+3.2.  Returning Confirmation in Token Introspection
+
+4.  Presenting an HTTP Message Signature Bound Access Token
+
+   HTTP Message Signature bound access token MUST be presented in an
+   HTTP Authorization field using the HTTPSig authorization scheme.
 
    Authorization: HTTPSig 2340897.34j123-134uh2345n
 
-   The client MUST include an HTTP Message Signature that covers, at
-   minimum:
+   Note that HTTP authorization schemes defined in [HTTPAUTH] are case-
+   insensitive, and so all the following are equivalent:
 
-   *  The request target of the RS being called
+   Authorization: HTTPSig 2340897.34j123-134uh2345n
+   Authorization: httpsig 2340897.34j123-134uh2345n
+   Authorization: HTTPSIG 2340897.34j123-134uh2345n
+   Authorization: Httpsig 2340897.34j123-134uh2345n
+   Authorization: hTpTsIg 2340897.34j123-134uh2345n
 
-   *  The Host header of the RS being called
+   When presenting an HTTP Message Signature bound access token to an
+   RS, the client MUST include a signature compliant with [HTTPSIG].
+   The covered components MUST include:
 
-   *  The Authorization header containing the access token value.
+   *  @method the HTTP method of the request
 
-   The signature parameters MUST include a created signature parameter.
-   The RS SHOULD use this field to ensure freshness of the signed
-   request, appropriate to the API being protected.
+   *  @target-uri the full request URI of the request (note that this
+      includes the scheme, authority, path, and query)
 
-   The client MUST NOT include an alg signature parameter, since the
-   algorithm is determined by the client's registered key.  The client
-   MUST include the keyid signature parameter set to the value returned
-   in the token response Section 2.
+   *  authorization the access token value being presented
+
+   The RS MAY require additional components to be covered by the
+   signature, and the client MUST include any additional fields or
+   components of the HTTP request that are relevant to the security of
+   the RS.  For example, if the API being served by the RS declares that
+   incoming content type makes a material difference, the RS SHOULD
+   require signing of the Content-Type header in addition to the above.
+
+   The request MAY include multiple signatures to serve different needs.
+
+   If the request includes an entity body (such as a POST, PUT, or
+   QUERY), the client SHOULD calculate the digest as per [DIGEST] and
+   also sign the digest header (such as Content-Digest).
+
+   The signature MUST include the following parameters:
+
+   *  created a timestamp for signature creation; this MUST be within a
+      small number of seconds of issuance (e.g. 30 seconds to account
+      for clock skew)
+
+   *  nonce a random unique value that the AS can use to prevent
+      signature replay within the small validity time window
+
+   *  tag a string indicating that this is being used for requesting a
+      bound token, MUST be the value "httpsig-oauth"
+
+   *  keyid the kid value for the key used to sign the request
+
+   The client MUST NOT include an alg signature parameter.
+
+   For example, the following signed request includes a signature with
+   the needed parameters:
+
+   NOTE: '\' line wrapping per RFC 8792
+
+   GET /foo HTTP/1.1
+   Host: example.com
+   Date: Mon, 20 Apr 2026 02:07:55 GMT
+   Authorization: HTTPSig 2340897.34j123-134uh2345n
+   Signature-Input: sig1=("@method" "@target-uri" "authorization")\
+     ;created=1776650875;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCg\
+     efQ";nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
+   Signature: sig1=:kFJC2WoBbrQc8tsKiowIb8oeIA533qmKvzdKf8kndJ7kaLxGmm2v\
+     9+IPB8kLE0WUea8KryJGSV7ji1apLkeKBg==:
+
+5.  Validating an HTTP Message Signature Bound Access Token Request
+
+   In order for a request protected by an HTTP Message Signature bound
+   access token to be considered valid, the RS MUST perform the
+   following checks:
+
+   *  The presented signature validates using the key associated with
+      the token
+
+   *  The signature validates using the algorithm associated with the
+      key
+
+   *  The created value is not too far in the past (e.g. 30 seconds to
+      account for clock skew and network delays)
+
+   *  The nonce value has not been previously used within the time
+      validity window of this request
+
+   *  The tag value is "httpsig-oauth"
+
+   *  The covered components and parameters include all items enumerated
+      in Section 4
+
+   If the request includes an entity body (such as a POST, PUT, or
+   QUERY) and a digest as per [DIGEST], the RS MUST validate the digest.
+
+   If the request includes multiple signatures tagged "httpsig-oauth",
+   all signatures MUST be validated.
+
+   For example, to validate the request:
+
+   NOTE: '\' line wrapping per RFC 8792
+
+   GET /foo HTTP/1.1
+   Host: example.com
+   Date: Mon, 20 Apr 2026 02:07:55 GMT
+   Authorization: HTTPSig 2340897.34j123-134uh2345n
+   Signature-Input: sig1=("@method" "@target-uri" "authorization")\
+     ;created=1776650875;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCg\
+     efQ";nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
+   Signature: sig1=:kFJC2WoBbrQc8tsKiowIb8oeIA533qmKvzdKf8kndJ7kaLxGmm2v\
+     9+IPB8kLE0WUea8KryJGSV7ji1apLkeKBg==:
+
+   The RS determines the key bound to the token and validates the kid
+   value against that key.  The RS determines the algorithm from the key
+   and performs signature validation per [HTTPSIG] on the
 
    In this example, the client has a key with the kid value of test-key-
    rsa-pss which uses the JWA alg value of PS512.  The signature input
@@ -177,6 +476,8 @@ Table of Contents
 
    This results in the following signed HTTP message, including the
    access token.
+
+   NOTE: '\' line wrapping per RFC 8792
 
    GET /foo HTTP/1.1
    Host: example.com
@@ -192,63 +493,145 @@ Table of Contents
      p+3/aFoUVTJ/1J6JfehZpXqehwv3KNoQ==:
 
    An RS receiving such a signed message and a bound access token MUST
-   verify the HTTP Message Signature as described in
-   [I-D.ietf-httpbis-message-signatures].  The RS MUST verify that all
-   required portions of the HTTP request are covered by the signature by
-   examining the contents of the signature parameters.
+   verify the HTTP Message Signature as described in [HTTPSIG].  The RS
+   MUST verify that all required portions of the HTTP request are
+   covered by the signature by examining the contents of the signature
+   parameters.
 
-   [[ Editor's note: we should define confirmation methods for access
-   tokens here, including JWT values and introspection response values
-   to allow the RS to verify the signature w/o the client's registration
-   information. ]]
+6.  Acknowledgements
 
-4.  Acknowledgements
-
-5.  IANA Considerations
+7.  IANA Considerations
 
    [[ TBD: register the token type and new parameters into their
    appropriate registries, as well as the JWT and introspection
-   parameters. ]]
+   parameters needed for confirmation methods. ]]
 
-6.  Security Considerations
+8.  Security Considerations
 
-   [[ TBD: There are a lot of security considerations to add. ]]
+   [[ TBD. ]]
 
-   All requests have to be over TLS or equivalent as per [BCP195].
+   *  All requests have to be over TLS or equivalent as per [BCP195].
 
-7.  Privacy Considerations
+   *  Leakage of a private key alongside a token allows for re-
+      presentation of that token.
 
-   [[ TBD: There are a lot of privacy considerations to add. ]]
+   *  Insufficient coverage of a message allows a signature to be
+      attached to a different message.
 
-8.  Normative References
+   *  Failure to check derived attributes allows a signature to be
+      replayed.
 
-   [BCP195]   Sheffer, Y., Holz, R., and P. Saint-Andre,
+   *  Signatures could be replayed outside of their vailidty window if
+      not checked.
+
+9.  Privacy Considerations
+
+   [[ TBD. ]]
+
+   *  Re-use of a public-key for tokens at multiple RS's can allow
+      tracking of a client/user combination based on the key identity.
+
+10.  References
+
+10.1.  Normative References
+
+   [BCP195]   Best Current Practice 195,
+              <https://www.rfc-editor.org/info/bcp195>.
+              At the time of writing, this BCP comprises the following:
+
+              Moriarty, K. and S. Farrell, "Deprecating TLS 1.0 and TLS
+              1.1", BCP 195, RFC 8996, DOI 10.17487/RFC8996, March 2021,
+              <https://www.rfc-editor.org/info/rfc8996>.
+
+              Sheffer, Y., Saint-Andre, P., and T. Fossati,
               "Recommendations for Secure Use of Transport Layer
               Security (TLS) and Datagram Transport Layer Security
-              (DTLS)", May 2015,
-              <https://www.rfc-editor.org/info/bcp195>.
+              (DTLS)", BCP 195, RFC 9325, DOI 10.17487/RFC9325, November
+              2022, <https://www.rfc-editor.org/info/rfc9325>.
 
-   [I-D.ietf-httpbis-message-signatures]
-              Backman, A., Richer, J., and M. Sporny, "HTTP Message
-              Signatures", Work in Progress, Internet-Draft, draft-ietf-
-              httpbis-message-signatures-19, 26 July 2023,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-
-              message-signatures-19>.
+   [DIGEST]   Polli, R. and L. Pardue, "Digest Fields", RFC 9530,
+              DOI 10.17487/RFC9530, February 2024,
+              <https://www.rfc-editor.org/rfc/rfc9530>.
 
-   [I-D.ietf-oauth-dpop]
-              Fett, D., Campbell, B., Bradley, J., Lodderstedt, T.,
-              Jones, M. B., and D. Waite, "OAuth 2.0 Demonstrating Proof
-              of Possession (DPoP)", Work in Progress, Internet-Draft,
-              draft-ietf-oauth-dpop-16, 13 April 2023,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-oauth-
-              dpop-16>.
+   [DPOP]     Fett, D., Campbell, B., Bradley, J., Lodderstedt, T.,
+              Jones, M., and D. Waite, "OAuth 2.0 Demonstrating Proof of
+              Possession (DPoP)", RFC 9449, DOI 10.17487/RFC9449,
+              September 2023, <https://www.rfc-editor.org/rfc/rfc9449>.
 
-   [I-D.ietf-oauth-rar]
-              Lodderstedt, T., Richer, J., and B. Campbell, "OAuth 2.0
-              Rich Authorization Requests", Work in Progress, Internet-
-              Draft, draft-ietf-oauth-rar-23, 30 January 2023,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-oauth-
-              rar-23>.
+   [DYNREG]   Richer, J., Ed., Jones, M., Bradley, J., Machulak, M., and
+              P. Hunt, "OAuth 2.0 Dynamic Client Registration Protocol",
+              RFC 7591, DOI 10.17487/RFC7591, July 2015,
+              <https://www.rfc-editor.org/rfc/rfc7591>.
+
+   [HTTP]     Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
+              Ed., "HTTP Caching", STD 98, RFC 9111,
+              DOI 10.17487/RFC9111, June 2022,
+              <https://www.rfc-editor.org/rfc/rfc9111>.
+
+   [HTTPAUTH] Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
+              Protocol (HTTP/1.1): Authentication", RFC 7235,
+              DOI 10.17487/RFC7235, June 2014,
+              <https://www.rfc-editor.org/rfc/rfc7235>.
+
+   [HTTPSIG]  Backman, A., Ed., Richer, J., Ed., and M. Sporny, "HTTP
+              Message Signatures", RFC 9421, DOI 10.17487/RFC9421,
+              February 2024, <https://www.rfc-editor.org/rfc/rfc9421>.
+
+   [JSON]     Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
+              Interchange Format", STD 90, RFC 8259,
+              DOI 10.17487/RFC8259, December 2017,
+              <https://www.rfc-editor.org/rfc/rfc8259>.
+
+   [JWK]      Jones, M., "JSON Web Key (JWK)", RFC 7517,
+              DOI 10.17487/RFC7517, May 2015,
+              <https://www.rfc-editor.org/rfc/rfc7517>.
+
+   [MTLS]     Campbell, B., Bradley, J., Sakimura, N., and T.
+              Lodderstedt, "OAuth 2.0 Mutual-TLS Client Authentication
+              and Certificate-Bound Access Tokens", RFC 8705,
+              DOI 10.17487/RFC8705, February 2020,
+              <https://www.rfc-editor.org/rfc/rfc8705>.
+
+   [OAUTH]    Hardt, D., Ed., "The OAuth 2.0 Authorization Framework",
+              RFC 6749, DOI 10.17487/RFC6749, October 2012,
+              <https://www.rfc-editor.org/rfc/rfc6749>.
+
+   [OAUTH-BEARER]
+              Jones, M. and D. Hardt, "The OAuth 2.0 Authorization
+              Framework: Bearer Token Usage", RFC 6750,
+              DOI 10.17487/RFC6750, October 2012,
+              <https://www.rfc-editor.org/rfc/rfc6750>.
+
+   [PAR]      Lodderstedt, T., Campbell, B., Sakimura, N., Tonge, D.,
+              and F. Skokan, "OAuth 2.0 Pushed Authorization Requests",
+              RFC 9126, DOI 10.17487/RFC9126, September 2021,
+              <https://www.rfc-editor.org/rfc/rfc9126>.
+
+   [RAR]      Olson, A., Eggert, P., and K. Murchison, "The Time Zone
+              Information Format (TZif)", RFC 9636,
+              DOI 10.17487/RFC9636, October 2024,
+              <https://www.rfc-editor.org/rfc/rfc9636>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8792]  Watsen, K., Auerswald, E., Farrel, A., and Q. Wu,
+              "Handling Long Lines in Content of Internet-Drafts and
+              RFCs", RFC 8792, DOI 10.17487/RFC8792, June 2020,
+              <https://www.rfc-editor.org/rfc/rfc8792>.
+
+   [STRUCTURED]
+              Nottingham, M. and P. Kamp, "Structured Field Values for
+              HTTP", RFC 9651, DOI 10.17487/RFC9651, September 2024,
+              <https://www.rfc-editor.org/rfc/rfc9651>.
+
+10.2.  Informative References
 
    [I-D.ietf-oauth-signed-http-request]
               Richer, J., Bradley, J., and H. Tschofenig, "A Method for
@@ -257,82 +640,76 @@ Table of Contents
               August 2016, <https://datatracker.ietf.org/doc/html/draft-
               ietf-oauth-signed-http-request-03>.
 
-   [I-D.ietf-secevent-subject-identifiers]
-              Backman, A., Scurtescu, M., and P. Jain, "Subject
-              Identifiers for Security Event Tokens", Work in Progress,
-              Internet-Draft, draft-ietf-secevent-subject-identifiers-
-              18, 24 June 2023, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-secevent-subject-identifiers-18>.
-
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997,
-              <https://www.rfc-editor.org/rfc/rfc2119>.
-
-   [RFC3230]  Mogul, J. and A. Van Hoff, "Instance Digests in HTTP",
-              RFC 3230, DOI 10.17487/RFC3230, January 2002,
-              <https://www.rfc-editor.org/rfc/rfc3230>.
-
-   [RFC3986]  Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform
-              Resource Identifier (URI): Generic Syntax", STD 66,
-              RFC 3986, DOI 10.17487/RFC3986, January 2005,
-              <https://www.rfc-editor.org/rfc/rfc3986>.
-
-   [RFC5646]  Phillips, A., Ed. and M. Davis, Ed., "Tags for Identifying
-              Languages", BCP 47, RFC 5646, DOI 10.17487/RFC5646,
-              September 2009, <https://www.rfc-editor.org/rfc/rfc5646>.
-
-   [RFC6749]  Hardt, D., Ed., "The OAuth 2.0 Authorization Framework",
-              RFC 6749, DOI 10.17487/RFC6749, October 2012,
-              <https://www.rfc-editor.org/rfc/rfc6749>.
-
-   [RFC6750]  Jones, M. and D. Hardt, "The OAuth 2.0 Authorization
-              Framework: Bearer Token Usage", RFC 6750,
-              DOI 10.17487/RFC6750, October 2012,
-              <https://www.rfc-editor.org/rfc/rfc6750>.
-
-   [RFC7234]  Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
-              Ed., "Hypertext Transfer Protocol (HTTP/1.1): Caching",
-              RFC 7234, DOI 10.17487/RFC7234, June 2014,
-              <https://www.rfc-editor.org/rfc/rfc7234>.
-
-   [RFC7468]  Josefsson, S. and S. Leonard, "Textual Encodings of PKIX,
-              PKCS, and CMS Structures", RFC 7468, DOI 10.17487/RFC7468,
-              April 2015, <https://www.rfc-editor.org/rfc/rfc7468>.
-
-   [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
-              Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
-              2015, <https://www.rfc-editor.org/rfc/rfc7515>.
-
-   [RFC7517]  Jones, M., "JSON Web Key (JWK)", RFC 7517,
-              DOI 10.17487/RFC7517, May 2015,
-              <https://www.rfc-editor.org/rfc/rfc7517>.
-
-   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
-              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
-              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
-
-   [RFC8259]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
-              Interchange Format", STD 90, RFC 8259,
-              DOI 10.17487/RFC8259, December 2017,
-              <https://www.rfc-editor.org/rfc/rfc8259>.
-
-   [RFC8705]  Campbell, B., Bradley, J., Sakimura, N., and T.
-              Lodderstedt, "OAuth 2.0 Mutual-TLS Client Authentication
-              and Certificate-Bound Access Tokens", RFC 8705,
-              DOI 10.17487/RFC8705, February 2020,
-              <https://www.rfc-editor.org/rfc/rfc8705>.
-
-   [RFC8792]  Watsen, K., Auerswald, E., Farrel, A., and Q. Wu,
-              "Handling Long Lines in Content of Internet-Drafts and
-              RFCs", RFC 8792, DOI 10.17487/RFC8792, June 2020,
-              <https://www.rfc-editor.org/rfc/rfc8792>.
+   [SIGNED-INTROSPECTION]
+              Lodderstedt, T., Ed. and V. Dzhuvinov, "JSON Web Token
+              (JWT) Response for OAuth Token Introspection", RFC 9701,
+              DOI 10.17487/RFC9701, January 2025,
+              <https://www.rfc-editor.org/rfc/rfc9701>.
 
 Appendix A.  Document History
+
+   *  -01
+
+      -  Added key binding semantics
+
+      -  Updated references
+
+      -  Updated presentation requirements
+
+      -  Added appendix for potential future work
+
+      -  Added some basic security and privacy considerations, to be
+         expanded upon group discussion
 
    *  -00
 
       -  Initial individual draft.
+
+Appendix B.  Potential Other Work
+
+   [HTTPSIG] provides a generic mechanism for signing arbitrary HTTP
+   messages, both requests and responses.  While this specification is
+   focused solely on OAuth access token issuance and usage, [HTTPSIG]
+   could be used in other places in the OAuth ecosystem and this
+   appendix exists to capture some of those ideas.
+
+B.1.  Client Authentication
+
+   Similarly to [MTLS], [HTTPSIG] could be used as a generic client
+   authentication mechanism for the client calling the AS for any
+   authenticated call, including token PAR, the token endpoint.  Since
+   [HTTPSIG] allows for multiple signatures with different usage
+   parameters (including tag), this could be layered on top of even the
+   runtime token request key binding, allowing a client to use one key
+   for authentication and another for token use.
+
+B.2.  AS Responses
+
+   Since [HTTPSIG] can be used to sign responses, an AS could sign its
+   responses from backend endpoints (including the token endpoint,
+   revocation endpoint, discovery endpoint, introspection endpoint, etc)
+   with an issuer-based key, providing a layer of protection in addition
+   to the TLS transport.  Signed response mechanisms like
+   [SIGNED-INTROSPECTION] could be replaced with this method in many use
+   cases.
+
+B.3.  Non-Repudiation of Requests
+
+   Since [HTTPSIG] allows a signed response to contain elements of the
+   request that triggered the response, an AS or RS could use this
+   mechanism to provide non-repudiation of a response to bind it to a
+   particular request parameter set.
+
+B.4.  PAR Key Introduction
+
+   Keys for this purpose could be introduced during a [PAR] request
+   phase, as part of the call to the PAR endpoint.
+
+B.5.  Accept-Signature Support
+
+   The Accept-Signature mechanism in [HTTPSIG] allows for runtime
+   discovery of not only the applicability of signatures but also the
+   expected coverage, for particular uses.
 
 Author's Address
 
