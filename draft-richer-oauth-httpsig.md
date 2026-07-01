@@ -404,6 +404,10 @@ An RS receiving such a signed message and a bound access token MUST verify the H
 
 # Document History {#history}
 
+- -02
+    - Editorial fixes
+    - Added example of client registration metadata parameter in CIMD
+
 - -01
     - Added key binding semantics
     - Updated references
