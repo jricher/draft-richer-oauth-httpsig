@@ -1160,7 +1160,12 @@ HTTP Message Signatures to bind access tokens to keys held by OAuth 2.0 clients.
             <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-requesting-an-http-message-" class="internal xref">Requesting an HTTP Message Signature Bound Access Token</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
-                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-pre-registration-of-keys" class="internal xref">Pre-Registration of Keys</a></p>
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-pre-registration-of-keys" class="internal xref">Pre-Registration of Keys</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1.2.1">
+                    <p id="section-toc.1-1.2.2.1.2.1.1" class="keepWithNext"><a href="#section-2.1.1" class="auto internal xref">2.1.1</a>.  <a href="#name-example-client-registration" class="internal xref">Example Client Registration</a></p>
+</li>
+                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
                 <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-token-request-key-introduct" class="internal xref">Token Request Key Introduction</a></p>
@@ -1192,16 +1197,6 @@ HTTP Message Signatures to bind access tokens to keys held by OAuth 2.0 clients.
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-oauth-dynamic-client-regist" class="internal xref">OAuth Dynamic Client Registration Metadata</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.1">
-                    <p id="section-toc.1-1.7.2.1.2.1.1"><a href="#section-7.1.1" class="auto internal xref">7.1.1</a>.  <a href="#name-httpsig_key_binding_method" class="internal xref">httpsig_key_binding_method</a></p>
-</li>
-                </ul>
-</li>
-            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
@@ -1297,7 +1292,7 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
           <p id="section-2-2.2.1">A runtime method that allows a client to introduce key material during the token request phase of <span>[<a href="#OAUTH" class="cite xref">OAUTH</a>]</span><a href="#section-2-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-2-3">As part of its registration, a client MUST indicate which method it will use, using either the <code>httpsig_key_binding_method</code> client registration metadata parameter defined in <a href="#iana-dynreg" class="auto internal xref">Section 7.1</a> when using Dynamic Client Registration (<span>[<a href="#DYNREG" class="cite xref">DYNREG</a>]</span>) or Client ID Metadata Document (<span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>), or via an out of band method.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-2-3">As part of its registration, a client MUST indicate which method it will use, using either the <code>httpsig_key_binding_method</code> client registration metadata parameter defined (TBD) in <a href="#IANA" class="auto internal xref">Section 7</a> when using Dynamic Client Registration (<span>[<a href="#DYNREG" class="cite xref">DYNREG</a>]</span>) or Client ID Metadata Document (<span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>), or via an out of band method.<a href="#section-2-3" class="pilcrow">¶</a></p>
 <p id="section-2-4">[[ Editor's note: do we want to add an AS/RS metadata parameter to signal support for each type? ]]<a href="#section-2-4" class="pilcrow">¶</a></p>
 <p id="section-2-5">[[ Editor's note: Are there any other patterns of key introduction we should cover? I put PAR in the appendix as a note. ]]<a href="#section-2-5" class="pilcrow">¶</a></p>
 <div id="preregister">
@@ -1309,6 +1304,36 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
 <p id="section-2.1-2">[[ Editor's note: do we want to have a client field for the signing alg or just leave that to the key all the time? I prefer to keep it in the key. ]]<a href="#section-2.1-2" class="pilcrow">¶</a></p>
 <p id="section-2.1-3">A pre-registered key MAY be a shared secret (such as for use in an HMAC signature), but public key cryptography is RECOMMENDED.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
 <p id="section-2.1-4">Note that pre-registration can occur statically or dynamically (such as by using <span>[<a href="#DYNREG" class="cite xref">DYNREG</a>]</span>), as long as the key is associated with the client's <code>client_id</code> before the token request is made.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
+<div id="example-client-registration">
+<section id="section-2.1.1">
+          <h4 id="name-example-client-registration">
+<a href="#section-2.1.1" class="section-number selfRef">2.1.1. </a><a href="#name-example-client-registration" class="section-name selfRef">Example Client Registration</a>
+          </h4>
+<p id="section-2.1.1-1">A client can publish the key binding parameters as part of a <span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span> alongside its <code>jwks</code> or <code>jwks_uri</code> values. For example, a client with the <code>client_id</code> value <code>https://client.example.com/client-metadata.json</code> would publish the following document at that URL, indicating that it uses a pre-registered key:<a href="#section-2.1.1-1" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-2.1.1-2">
+<pre>
+{
+    "client_id": "https://client.example.com/client-metadata.json",
+    "client_name": "Example Client",
+    "jwks": {
+        "keys": [
+            {
+                "kty": "OKP",
+                "use": "sig",
+                "crv": "Ed25519",
+                "kid": "j-0Ny45NWmqGq6GQ",
+                "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
+                "alg": "EdDSA"
+            }
+        ]
+    },
+    "httpsig_bound_access_token_kid": "j-0Ny45NWmqGq6GQ",
+    "httpsig_key_binding_method": "preregistered"
+}
+</pre><a href="#section-2.1.1-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
 </section>
 </div>
 <div id="runtime">
@@ -1642,73 +1667,6 @@ Signature: sig1=:o+Fy/a6IIWhHwnMFhsHqfXEpheWGBMOU3pheT50zA8rL5F8Nur\
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
 <p id="section-7-1">[[ TBD: register the token type and new parameters into their appropriate registries, as well as the JWT and introspection parameters needed for confirmation methods. ]]<a href="#section-7-1" class="pilcrow">¶</a></p>
-<div id="iana-dynreg">
-<section id="section-7.1">
-        <h3 id="name-oauth-dynamic-client-regist">
-<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-oauth-dynamic-client-regist" class="section-name selfRef">OAuth Dynamic Client Registration Metadata</a>
-        </h3>
-<p id="section-7.1-1">This specification requests registration of the following client metadata name in the "OAuth Dynamic Client Registration Metadata" registry established by <span>[<a href="#DYNREG" class="cite xref">DYNREG</a>]</span>.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-<div id="httpsigkeybindingmethod">
-<section id="section-7.1.1">
-          <h4 id="name-httpsig_key_binding_method">
-<a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-httpsig_key_binding_method" class="section-name selfRef">httpsig_key_binding_method</a>
-          </h4>
-<span class="break"></span><dl class="dlParallel" id="section-7.1.1-1">
-            <dt id="section-7.1.1-1.1">Client Metadata Name:</dt>
-            <dd style="margin-left: 1.5em" id="section-7.1.1-1.2">
-              <p id="section-7.1.1-1.2.1"><code>httpsig_key_binding_method</code><a href="#section-7.1.1-1.2.1" class="pilcrow">¶</a></p>
-</dd>
-            <dd class="break"></dd>
-<dt id="section-7.1.1-1.3">Client Metadata Description:</dt>
-            <dd style="margin-left: 1.5em" id="section-7.1.1-1.4">
-              <p id="section-7.1.1-1.4.1">Indicates which method the client uses to bind a key for HTTP Message Signature bound access tokens. The value MUST be one of <code>preregistered</code>, indicating that the client uses a key registered ahead of time as described in <a href="#preregister" class="auto internal xref">Section 2.1</a>, or <code>runtime</code>, indicating that the client introduces its key at the time of the token request as described in <a href="#runtime" class="auto internal xref">Section 2.2</a>.<a href="#section-7.1.1-1.4.1" class="pilcrow">¶</a></p>
-</dd>
-            <dd class="break"></dd>
-<dt id="section-7.1.1-1.5">Change Controller:</dt>
-            <dd style="margin-left: 1.5em" id="section-7.1.1-1.6">
-              <p id="section-7.1.1-1.6.1">IETF<a href="#section-7.1.1-1.6.1" class="pilcrow">¶</a></p>
-</dd>
-            <dd class="break"></dd>
-<dt id="section-7.1.1-1.7">Reference:</dt>
-            <dd style="margin-left: 1.5em" id="section-7.1.1-1.8">
-              <p id="section-7.1.1-1.8.1">This document<a href="#section-7.1.1-1.8.1" class="pilcrow">¶</a></p>
-</dd>
-          <dd class="break"></dd>
-</dl>
-<div id="example">
-<section id="section-7.1.1.1">
-            <h5 id="name-example">
-<a href="#section-7.1.1.1" class="section-number selfRef">7.1.1.1. </a><a href="#name-example" class="section-name selfRef">Example</a>
-            </h5>
-<p id="section-7.1.1.1-1">A client can publish this parameter as part of a <span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>, alongside its <code>jwks</code> and <code>httpsig_bound_access_token_kid</code> values. For example, a client with the <code>client_id</code> value <code>https://client.example.com/client-metadata.json</code> would publish the following document at that URL, indicating that it uses a pre-registered key:<a href="#section-7.1.1.1-1" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-7.1.1.1-2">
-<pre>
-{
-    "client_id": "https://client.example.com/client-metadata.json",
-    "client_name": "Example Client",
-    "jwks": {
-        "keys": [
-            {
-                "kty": "OKP",
-                "use": "sig",
-                "crv": "Ed25519",
-                "kid": "j-0Ny45NWmqGq6GQ",
-                "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
-                "alg": "EdDSA"
-            }
-        ]
-    },
-    "httpsig_bound_access_token_kid": "j-0Ny45NWmqGq6GQ",
-    "httpsig_key_binding_method": "preregistered"
-}
-</pre><a href="#section-7.1.1.1-2" class="pilcrow">¶</a>
-</div>
-</section>
-</div>
-</section>
-</div>
-</section>
-</div>
 </section>
 </div>
 <div id="Security">
