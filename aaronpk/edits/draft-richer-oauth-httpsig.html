@@ -1252,7 +1252,7 @@ HTTP Message Signatures to bind access tokens to keys held by OAuth 2.0 clients.
       </h2>
 <p id="section-1-1">The OAuth 2.0 framework provides methods for clients to get delegated access tokens from an
 authorization server for accessing protected resources.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Defined in RFC6750, OAuth access tokens are bearer tokens.
+<p id="section-1-2">OAuth access tokens can be bearer tokens, or bound to a variety of mechanisms including mutual TLS, DPoP, or other presentation mechanisms.
 Bearer tokens are simple to implement but also have the significant security downside of
 allowing anyone who sees the access token to use that token.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3"><span>[<a href="#HTTPSIG" class="cite xref">HTTPSIG</a>]</span> defines a generic mechanism that is used to sign HTTP requests and responses.<a href="#section-1-3" class="pilcrow">¶</a></p>
@@ -1283,7 +1283,7 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
       <h2 id="name-requesting-an-http-message-">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-requesting-an-http-message-" class="section-name selfRef">Requesting an HTTP Message Signature Bound Access Token</a>
       </h2>
-<p id="section-2-1">To bind an access token to a key, the authorization server (AS) needs to know which key to bind to which token. This specification defines two common methods depending on the needs of the client:<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-1">To bind an access token to a key, the AS needs to know which key to bind to which token. This specification defines two common methods depending on the needs of the client:<a href="#section-2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-2-2.1">
           <p id="section-2-2.1.1">A static method that depends on key material available as part of the client registration<a href="#section-2-2.1.1" class="pilcrow">¶</a></p>
