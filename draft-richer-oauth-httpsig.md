@@ -56,7 +56,7 @@ HTTP Message Signatures to bind access tokens to keys held by OAuth 2.0 clients.
 The OAuth 2.0 framework provides methods for clients to get delegated access tokens from an
 authorization server for accessing protected resources.
 
-Defined in RFC6750, OAuth access tokens are bearer tokens.
+OAuth access tokens can be bearer tokens, or bound to a variety of mechanisms including mutual TLS, DPoP, or other presentation mechanisms.
 Bearer tokens are simple to implement but also have the significant security downside of
 allowing anyone who sees the access token to use that token.
 
@@ -80,7 +80,7 @@ This document contains non-normative examples of partial and complete HTTP messa
 
 # Requesting an HTTP Message Signature Bound Access Token {#binding}
 
-To bind an access token to a key, the authorization server (AS) needs to know which key to bind to which token. This specification defines two common methods depending on the needs of the client:
+To bind an access token to a key, the AS needs to know which key to bind to which token. This specification defines two common methods depending on the needs of the client:
 
 - A static method that depends on key material available as part of the client registration
 - A runtime method that allows a client to introduce key material during the token request phase of {{OAUTH}}
