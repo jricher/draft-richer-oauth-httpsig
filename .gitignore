@@ -16,6 +16,7 @@
 /lib
 /node_modules/
 /versioned/
+__pycache__/
 archive.json
 draft-richer-oauth-httpsig.xml
 Gemfile.lock
