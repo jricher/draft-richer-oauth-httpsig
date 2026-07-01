@@ -105,7 +105,7 @@ Note that pre-registration can occur statically or dynamically (such as by using
 
 Instead of pre-registering a key, a client can introduce its key during the token request in the same fashion as {{DPOP}}.
 
-The client MUST present its public key in the `Signature-Key` header field. The field is an HTTP Structured Field consisting of a Binary value containing the bytes of the {{JSON}} serialized {{JWK}} form of the key material.
+The client MUST present its public key in the Signature-Key header field. The field is an HTTP Structured Field consisting of a Binary value containing the bytes of the {{JSON}} serialized {{JWK}} form of the key material.
 
 The JWK MUST have a `kid` field. The key MUST be a public key (and neither a private key nor a shared secret key). The JWK MUST have an `alg` value that indicates a signature algorithm.
 
@@ -122,7 +122,7 @@ For example, the following JWK public key:
 }
 ~~~
 
-Can be encoded to the following `Signature-Key` field value (this example uses a compact JSON serialization that removes whitespace):
+Can be encoded to the following Signature-Key field value (this example uses a compact JSON serialization that removes whitespace):
 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
@@ -139,7 +139,7 @@ Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
 
 The presence of an HTTP Message Signature with the tag `httpsig-oauth-token-request` indicates that the client is requesting a bound token. The client MUST include a message signature of the indicated key.
 
-Additionally, the client MUST calculate and include the digest of the request body and include it as the `Content-Digest` header defined in {{DIGEST}}.
+Additionally, the client MUST calculate and include the digest of the request body and include it as the Content-Digest header defined in {{DIGEST}}.
 
 For example, a form-encoded request body consisting of:
 
@@ -150,7 +150,7 @@ grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA\
 &redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
 ~~~
 
-Would create the following `Content-Digest` header:
+Would create the following Content-Digest header:
 
 ~~~
 Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
