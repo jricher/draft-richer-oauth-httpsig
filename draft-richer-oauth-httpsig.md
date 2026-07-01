@@ -41,6 +41,7 @@ normative:
 
 informative:
     I-D.ietf-oauth-signed-http-request:
+    I-D.ietf-oauth-client-id-metadata-document:
     SIGNED-INTROSPECTION: RFC9701
 
 --- abstract
@@ -84,15 +85,15 @@ To bind an access token to a key, the authorization server (AS) needs to know wh
 - A static method that depends on key material available as part of the client registration
 - A runtime method that allows a client to introduce key material during the token request phase of {{OAUTH}}
 
-As part of its registration, a client MUST indicate which method it will use.
+As part of its registration, a client MUST indicate which method it will use, using either the `httpsig_key_binding_method` client registration metadata parameter defined in {{iana-dynreg}} when using Dynamic Client Registration ({{DYNREG}}) or Client ID Metadata Document ({{I-D.ietf-oauth-client-id-metadata-document}}), or via an out of band method.
 
-\[\[ Editor's note: do we want to add a client metadata parameter to signal this, as well as an AS/RS metadata parmaeter to signal support for each type? \]\]
+\[\[ Editor's note: do we want to add an AS/RS metadata parameter to signal support for each type? \]\]
 
 \[\[ Editor's note: Are there any other patterns of key introduction we should cover? I put PAR in the appendix as a note. \]\]
 
 ## Pre-Registration of Keys {#preregister}
 
-A client pre-registering its keys for {{HTTPSIG}} binding MUST include the key in its registered `jwks` value or make it available from its `jwks_uri` endpoint. The JWK MUST have a `kid` field and MUST indicate a signing algorithm in its `alg` field. The key ID for the public used for HTTP Message Signature bound access tokens MUST be identified using the `httpsig_bound_access_token_kid` field in the client's metadata.
+A client pre-registering its keys for {{HTTPSIG}} binding MUST include the key in its registered `jwks` value or make it available from its `jwks_uri` endpoint. The JWK MUST have a `kid` field and MUST indicate a signing algorithm in its `alg` field. The key ID for the public key used for HTTP Message Signature bound access tokens MUST be identified using the `httpsig_bound_access_token_kid` field in the client's metadata.
 
 \[\[ Editor's note: do we want to have a client field for the signing alg or just leave that to the key all the time? I prefer to keep it in the key. \]\]
 
@@ -104,7 +105,7 @@ Note that pre-registration can occur statically or dynamically (such as by using
 
 Instead of pre-registering a key, a client can introduce its key during the token request in the same fashion as {{DPOP}}.
 
-The client MUST present its public key in the Signature-Key header field. The field is an HTTP Structured Field consisting of a Binary value containing the bytes of the {{JSON}} serialized {{JWK}} form of the key material.
+The client MUST present its public key in the `Signature-Key` header field. The field is an HTTP Structured Field consisting of a Binary value containing the bytes of the {{JSON}} serialized {{JWK}} form of the key material.
 
 The JWK MUST have a `kid` field. The key MUST be a public key (and neither a private key nor a shared secret key). The JWK MUST have an `alg` value that indicates a signature algorithm.
 
@@ -121,7 +122,7 @@ For example, the following JWK public key:
 }
 ~~~
 
-Can be encoded to the following Signature-Key field value (this example uses a compact JSON serialization that removes whitespace):
+Can be encoded to the following `Signature-Key` field value (this example uses a compact JSON serialization that removes whitespace):
 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
@@ -136,9 +137,9 @@ Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
 
 ## Token Request {#request}
 
-The presence of an HTTP Message Signature with the tag "httpsig-oauth-token-request" indicates that the client is requesting a bound token. The client MUST include a message signature of the indicated key.
+The presence of an HTTP Message Signature with the tag `httpsig-oauth-token-request` indicates that the client is requesting a bound token. The client MUST include a message signature of the indicated key.
 
-Additionally, the client MUST calculate and include the digest of the request body and include it as the Content-Digest header defined in {{DIGEST}}.
+Additionally, the client MUST calculate and include the digest of the request body and include it as the `Content-Digest` header defined in {{DIGEST}}.
 
 For example, a form-encoded request body consisting of:
 
@@ -149,7 +150,7 @@ grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA\
 &redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
 ~~~
 
-Would create the following Content-Digest header:
+Would create the following `Content-Digest` header:
 
 ~~~
 Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
@@ -247,7 +248,7 @@ Authorization: HTTPSig 2340897.34j123-134uh2345n
 Authorization: httpsig 2340897.34j123-134uh2345n
 Authorization: HTTPSIG 2340897.34j123-134uh2345n
 Authorization: Httpsig 2340897.34j123-134uh2345n
-Authorization: hTpTsIg 2340897.34j123-134uh2345n
+Authorization: hTtPsIg 2340897.34j123-134uh2345n
 ~~~
 
 When presenting an HTTP Message Signature bound access token to an RS, the client MUST include a signature compliant with {{HTTPSIG}}. The covered components MUST include:
@@ -357,6 +358,49 @@ An RS receiving such a signed message and a bound access token MUST verify the H
 # IANA Considerations {#IANA}
 
 \[\[ TBD: register the token type and new parameters into their appropriate registries, as well as the JWT and introspection parameters needed for confirmation methods. \]\]
+
+## OAuth Dynamic Client Registration Metadata {#iana-dynreg}
+
+This specification requests registration of the following client metadata name in the "OAuth Dynamic Client Registration Metadata" registry established by {{DYNREG}}.
+
+### httpsig_key_binding_method
+
+Client Metadata Name:
+: `httpsig_key_binding_method`
+
+Client Metadata Description:
+: Indicates which method the client uses to bind a key for HTTP Message Signature bound access tokens. The value MUST be one of `preregistered`, indicating that the client uses a key registered ahead of time as described in {{preregister}}, or `runtime`, indicating that the client introduces its key at the time of the token request as described in {{runtime}}.
+
+Change Controller:
+: IETF
+
+Reference:
+: This document
+
+#### Example
+
+A client can publish this parameter as part of a {{I-D.ietf-oauth-client-id-metadata-document}}, alongside its `jwks` and `httpsig_bound_access_token_kid` values. For example, a client with the `client_id` value `https://client.example.com/client-metadata.json` would publish the following document at that URL, indicating that it uses a pre-registered key:
+
+~~~ json
+{
+    "client_id": "https://client.example.com/client-metadata.json",
+    "client_name": "Example Client",
+    "jwks": {
+        "keys": [
+            {
+                "kty": "OKP",
+                "use": "sig",
+                "crv": "Ed25519",
+                "kid": "j-0Ny45NWmqGq6GQ",
+                "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
+                "alg": "EdDSA"
+            }
+        ]
+    },
+    "httpsig_bound_access_token_kid": "j-0Ny45NWmqGq6GQ",
+    "httpsig_key_binding_method": "preregistered"
+}
+~~~
 
 # Security Considerations {#Security}
 
