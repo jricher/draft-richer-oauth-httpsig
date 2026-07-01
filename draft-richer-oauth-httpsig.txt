@@ -689,6 +689,12 @@ Table of Contents
 
 Appendix A.  Document History
 
+   *  -02
+
+      -  Editorial fixes
+
+      -  Added example of client registration metadata parameter in CIMD
+
    *  -01
 
       -  Added key binding semantics
