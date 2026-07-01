@@ -17,6 +17,10 @@ author:
     organization: MongoDB
     email: ietf@justin.richer.org
     role: editor
+  - ins: A. Parecki
+    name: Aaron Parecki
+    organization: Okta
+    email: aaron@parecki.com
 
 normative:
     BCP195:
@@ -49,18 +53,17 @@ HTTP Message Signatures to bind access tokens to keys held by OAuth 2.0 clients.
 # Introduction
 
 The OAuth 2.0 framework provides methods for clients to get delegated access tokens from an
-authorization server for accessing protected resources. The access tokens at the center
-of OAuth 2.0 can be bound to a variety of different mechanisms, including bearer tokens,
-mutual TLS, or other presentation mechanisms.
+authorization server for accessing protected resources.
 
+Defined in RFC6750, OAuth access tokens are bearer tokens.
 Bearer tokens are simple to implement but also have the significant security downside of
-allowing anyone who sees the access token to use that token. {{HTTPSIG}} defines a generic
-mechanism that is used to sign HTTP requests and responses.
+allowing anyone who sees the access token to use that token.
+
+{{HTTPSIG}} defines a generic mechanism that is used to sign HTTP requests and responses.
 
 This specification defines means to bind access tokens to a key held by the client, a token type
-value and token response for indicating that a token is meant to be used with {{HTTPSIG}}
-presentation, and a method for presenting bound access tokens in HTTP requests using
-{{HTTPSIG}}.
+value, a token response for indicating that a token is meant to be used with {{HTTPSIG}}
+presentation, and a method for presenting bound access tokens in HTTP requests using {{HTTPSIG}}.
 
 This work complements and builds on experience with {{DPOP}} and {{MTLS}}, as well as
 implementations of {{I-D.ietf-oauth-signed-http-request}}, a spiritual predecessor to this
@@ -76,7 +79,7 @@ This document contains non-normative examples of partial and complete HTTP messa
 
 # Requesting an HTTP Message Signature Bound Access Token {#binding}
 
-To bind an access token to a key, the AS needs to know which key to bind to which token. This specification defines two common methods depending on the needs of the client:
+To bind an access token to a key, the authorization server (AS) needs to know which key to bind to which token. This specification defines two common methods depending on the needs of the client:
 
 - A static method that depends on key material available as part of the client registration
 - A runtime method that allows a client to introduce key material during the token request phase of {{OAUTH}}
