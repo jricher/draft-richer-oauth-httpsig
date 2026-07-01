@@ -1317,7 +1317,7 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
 <a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-token-request-key-introduct" class="section-name selfRef">Token Request Key Introduction</a>
         </h3>
 <p id="section-2.2-1">Instead of pre-registering a key, a client can introduce its key during the token request in the same fashion as <span>[<a href="#DPOP" class="cite xref">DPOP</a>]</span>.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.2-2">The client MUST present its public key in the <code>Signature-Key</code> header field. The field is an HTTP Structured Field consisting of a Binary value containing the bytes of the <span>[<a href="#JSON" class="cite xref">JSON</a>]</span> serialized <span>[<a href="#JWK" class="cite xref">JWK</a>]</span> form of the key material.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">The client MUST present its public key in the Signature-Key header field. The field is an HTTP Structured Field consisting of a Binary value containing the bytes of the <span>[<a href="#JSON" class="cite xref">JSON</a>]</span> serialized <span>[<a href="#JWK" class="cite xref">JWK</a>]</span> form of the key material.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
 <p id="section-2.2-3">The JWK MUST have a <code>kid</code> field. The key MUST be a public key (and neither a private key nor a shared secret key). The JWK MUST have an <code>alg</code> value that indicates a signature algorithm.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
 <p id="section-2.2-4">For example, the following JWK public key:<a href="#section-2.2-4" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-2.2-5">
@@ -1332,7 +1332,7 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
 }
 </pre><a href="#section-2.2-5" class="pilcrow">¶</a>
 </div>
-<p id="section-2.2-6">Can be encoded to the following <code>Signature-Key</code> field value (this example uses a compact JSON serialization that removes whitespace):<a href="#section-2.2-6" class="pilcrow">¶</a></p>
+<p id="section-2.2-6">Can be encoded to the following Signature-Key field value (this example uses a compact JSON serialization that removes whitespace):<a href="#section-2.2-6" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-2.2-7">
 <pre>
 NOTE: '\' line wrapping per RFC 8792
@@ -1352,7 +1352,7 @@ Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
 <a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-token-request" class="section-name selfRef">Token Request</a>
         </h3>
 <p id="section-2.3-1">The presence of an HTTP Message Signature with the tag <code>httpsig-oauth-token-request</code> indicates that the client is requesting a bound token. The client MUST include a message signature of the indicated key.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
-<p id="section-2.3-2">Additionally, the client MUST calculate and include the digest of the request body and include it as the <code>Content-Digest</code> header defined in <span>[<a href="#DIGEST" class="cite xref">DIGEST</a>]</span>.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">Additionally, the client MUST calculate and include the digest of the request body and include it as the Content-Digest header defined in <span>[<a href="#DIGEST" class="cite xref">DIGEST</a>]</span>.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
 <p id="section-2.3-3">For example, a form-encoded request body consisting of:<a href="#section-2.3-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-2.3-4">
 <pre>
@@ -1362,7 +1362,7 @@ grant_type=authorization_code&amp;code=SplxlOBeZQQYbYS6WxSbIA\
 &amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
 </pre><a href="#section-2.3-4" class="pilcrow">¶</a>
 </div>
-<p id="section-2.3-5">Would create the following <code>Content-Digest</code> header:<a href="#section-2.3-5" class="pilcrow">¶</a></p>
+<p id="section-2.3-5">Would create the following Content-Digest header:<a href="#section-2.3-5" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-2.3-6">
 <pre>
 Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
