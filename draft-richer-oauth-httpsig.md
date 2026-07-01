@@ -85,7 +85,7 @@ To bind an access token to a key, the authorization server (AS) needs to know wh
 - A static method that depends on key material available as part of the client registration
 - A runtime method that allows a client to introduce key material during the token request phase of {{OAUTH}}
 
-As part of its registration, a client MUST indicate which method it will use, using either the `httpsig_key_binding_method` client registration metadata parameter defined in {{iana-dynreg}} when using Dynamic Client Registration ({{DYNREG}}) or Client ID Metadata Document ({{I-D.ietf-oauth-client-id-metadata-document}}), or via an out of band method.
+As part of its registration, a client MUST indicate which method it will use, using either the `httpsig_key_binding_method` client registration metadata parameter defined (TBD) in {{IANA}} when using Dynamic Client Registration ({{DYNREG}}) or Client ID Metadata Document ({{I-D.ietf-oauth-client-id-metadata-document}}), or via an out of band method.
 
 \[\[ Editor's note: do we want to add an AS/RS metadata parameter to signal support for each type? \]\]
 
@@ -100,6 +100,31 @@ A client pre-registering its keys for {{HTTPSIG}} binding MUST include the key i
 A pre-registered key MAY be a shared secret (such as for use in an HMAC signature), but public key cryptography is RECOMMENDED.
 
 Note that pre-registration can occur statically or dynamically (such as by using {{DYNREG}}), as long as the key is associated with the client's `client_id` before the token request is made.
+
+### Example Client Registration
+
+A client can publish the key binding parameters as part of a {{I-D.ietf-oauth-client-id-metadata-document}} alongside its `jwks` or `jwks_uri` values. For example, a client with the `client_id` value `https://client.example.com/client-metadata.json` would publish the following document at that URL, indicating that it uses a pre-registered key:
+
+~~~ json
+{
+    "client_id": "https://client.example.com/client-metadata.json",
+    "client_name": "Example Client",
+    "jwks": {
+        "keys": [
+            {
+                "kty": "OKP",
+                "use": "sig",
+                "crv": "Ed25519",
+                "kid": "j-0Ny45NWmqGq6GQ",
+                "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
+                "alg": "EdDSA"
+            }
+        ]
+    },
+    "httpsig_bound_access_token_kid": "j-0Ny45NWmqGq6GQ",
+    "httpsig_key_binding_method": "preregistered"
+}
+~~~
 
 ## Token Request Key Introduction {#runtime}
 
@@ -358,49 +383,6 @@ An RS receiving such a signed message and a bound access token MUST verify the H
 # IANA Considerations {#IANA}
 
 \[\[ TBD: register the token type and new parameters into their appropriate registries, as well as the JWT and introspection parameters needed for confirmation methods. \]\]
-
-## OAuth Dynamic Client Registration Metadata {#iana-dynreg}
-
-This specification requests registration of the following client metadata name in the "OAuth Dynamic Client Registration Metadata" registry established by {{DYNREG}}.
-
-### httpsig_key_binding_method
-
-Client Metadata Name:
-: `httpsig_key_binding_method`
-
-Client Metadata Description:
-: Indicates which method the client uses to bind a key for HTTP Message Signature bound access tokens. The value MUST be one of `preregistered`, indicating that the client uses a key registered ahead of time as described in {{preregister}}, or `runtime`, indicating that the client introduces its key at the time of the token request as described in {{runtime}}.
-
-Change Controller:
-: IETF
-
-Reference:
-: This document
-
-#### Example
-
-A client can publish this parameter as part of a {{I-D.ietf-oauth-client-id-metadata-document}}, alongside its `jwks` and `httpsig_bound_access_token_kid` values. For example, a client with the `client_id` value `https://client.example.com/client-metadata.json` would publish the following document at that URL, indicating that it uses a pre-registered key:
-
-~~~ json
-{
-    "client_id": "https://client.example.com/client-metadata.json",
-    "client_name": "Example Client",
-    "jwks": {
-        "keys": [
-            {
-                "kty": "OKP",
-                "use": "sig",
-                "crv": "Ed25519",
-                "kid": "j-0Ny45NWmqGq6GQ",
-                "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
-                "alg": "EdDSA"
-            }
-        ]
-    },
-    "httpsig_bound_access_token_kid": "j-0Ny45NWmqGq6GQ",
-    "httpsig_key_binding_method": "preregistered"
-}
-~~~
 
 # Security Considerations {#Security}
 
