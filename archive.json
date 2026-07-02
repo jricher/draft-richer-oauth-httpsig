@@ -1,0 +1,424 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2026-07-02T03:44:28.415603+00:00",
+  "repo": "jricher/draft-richer-oauth-httpsig",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOTI9Xz87s3lSj",
+      "title": "rephrase intro, add client registration binding method parameter",
+      "url": "https://github.com/jricher/draft-richer-oauth-httpsig/pull/1",
+      "state": "MERGED",
+      "author": "aaronpk",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "also some editorial fixes",
+      "createdAt": "2026-07-01T21:32:09Z",
+      "updatedAt": "2026-07-01T22:36:06Z",
+      "baseRepository": "jricher/draft-richer-oauth-httpsig",
+      "baseRefName": "main",
+      "baseRefOid": "3cec0080bd8fb3bbd146e5213ba4f4dfc8aacbab",
+      "headRepository": "jricher/draft-richer-oauth-httpsig",
+      "headRefName": "aaronpk/edits",
+      "headRefOid": "b76045de2751b321b5412ae8937f218c5955e8ae",
+      "closedAt": "2026-07-01T22:36:06Z",
+      "mergedAt": "2026-07-01T22:36:06Z",
+      "mergedBy": "jricher",
+      "mergeCommit": {
+        "oid": "81bc2e70b816263274c2dc84455975fbcbd26a70"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvWWcA",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:45:44Z",
+          "updatedAt": "2026-07-01T21:45:44Z",
+          "comments": [
+            {
+              "originalPosition": 28,
+              "body": "This isn't actually true and we reference other protection mechanisms here. Why remove all that? ",
+              "createdAt": "2026-07-01T21:45:44Z",
+              "updatedAt": "2026-07-01T21:45:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvWkCw",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:46:31Z",
+          "updatedAt": "2026-07-01T21:46:31Z",
+          "comments": [
+            {
+              "originalPosition": 50,
+              "body": "I don't think we need to do this because we inherit OAuth terms",
+              "createdAt": "2026-07-01T21:46:31Z",
+              "updatedAt": "2026-07-01T21:46:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvWz2A",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:47:28Z",
+          "updatedAt": "2026-07-01T21:47:29Z",
+          "comments": [
+            {
+              "originalPosition": 75,
+              "body": "No, header fields aren't set off with this formatting in http specs. ",
+              "createdAt": "2026-07-01T21:47:28Z",
+              "updatedAt": "2026-07-01T21:47:29Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvW07g",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "aaronpk",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:47:32Z",
+          "updatedAt": "2026-07-01T21:47:32Z",
+          "comments": [
+            {
+              "originalPosition": 28,
+              "body": "The other methods are referenced down below already. I originally started editing this because \"bound to a variety of different mechanisms, including bearer tokens\" sounds weird, because bearer tokens aren't bound.",
+              "createdAt": "2026-07-01T21:47:32Z",
+              "updatedAt": "2026-07-01T21:47:32Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvW17A",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:47:36Z",
+          "updatedAt": "2026-07-01T21:47:36Z",
+          "comments": [
+            {
+              "originalPosition": 84,
+              "body": "Ibid",
+              "createdAt": "2026-07-01T21:47:36Z",
+              "updatedAt": "2026-07-01T21:47:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvW4rA",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:47:46Z",
+          "updatedAt": "2026-07-01T21:47:46Z",
+          "comments": [
+            {
+              "originalPosition": 96,
+              "body": "Ibid",
+              "createdAt": "2026-07-01T21:47:46Z",
+              "updatedAt": "2026-07-01T21:47:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvW6eg",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:47:53Z",
+          "updatedAt": "2026-07-01T21:47:53Z",
+          "comments": [
+            {
+              "originalPosition": 105,
+              "body": "Ibid",
+              "createdAt": "2026-07-01T21:47:53Z",
+              "updatedAt": "2026-07-01T21:47:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvW-Kw",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "aaronpk",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:48:06Z",
+          "updatedAt": "2026-07-01T21:48:07Z",
+          "comments": [
+            {
+              "originalPosition": 50,
+              "body": "you are technically correct, I just wanted to introduce the term to someone who might have found this from the HTTPSig world and is not yet familiar with OAuth terms",
+              "createdAt": "2026-07-01T21:48:06Z",
+              "updatedAt": "2026-07-01T21:48:07Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvXK8w",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:48:51Z",
+          "updatedAt": "2026-07-01T21:48:51Z",
+          "comments": [
+            {
+              "originalPosition": 122,
+              "body": "If we are going to add this one in the draft we need to add the rest. I would rather punt on iana. ",
+              "createdAt": "2026-07-01T21:48:51Z",
+              "updatedAt": "2026-07-01T21:48:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvXePA",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "aaronpk",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:50:04Z",
+          "updatedAt": "2026-07-01T21:50:04Z",
+          "comments": [
+            {
+              "originalPosition": 28,
+              "body": "```suggestion\nOAuth access tokens can be bearer tokens, or bound to a variety of mechanisms including mutual TLS, DPoP, or other presentation mechanisms.\n```\n\nhow about this instead?",
+              "createdAt": "2026-07-01T21:50:04Z",
+              "updatedAt": "2026-07-01T21:53:57Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvXzDQ",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "aaronpk",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:51:09Z",
+          "updatedAt": "2026-07-01T21:51:09Z",
+          "comments": [
+            {
+              "originalPosition": 75,
+              "body": "```suggestion\nThe client MUST present its public key in the Signature-Key header field. The field is an HTTP Structured Field consisting of a Binary value containing the bytes of the {{JSON}} serialized {{JWK}} form of the key material.\n```",
+              "createdAt": "2026-07-01T21:51:09Z",
+              "updatedAt": "2026-07-01T21:51:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvX4lA",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "aaronpk",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:51:23Z",
+          "updatedAt": "2026-07-01T21:51:23Z",
+          "comments": [
+            {
+              "originalPosition": 84,
+              "body": "```suggestion\nCan be encoded to the following Signature-Key field value (this example uses a compact JSON serialization that removes whitespace):\n```",
+              "createdAt": "2026-07-01T21:51:23Z",
+              "updatedAt": "2026-07-01T21:51:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvX8-Q",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "aaronpk",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:51:31Z",
+          "updatedAt": "2026-07-01T21:51:31Z",
+          "comments": [
+            {
+              "originalPosition": 96,
+              "body": "```suggestion\nAdditionally, the client MUST calculate and include the digest of the request body and include it as the Content-Digest header defined in {{DIGEST}}.\n```",
+              "createdAt": "2026-07-01T21:51:31Z",
+              "updatedAt": "2026-07-01T21:51:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvYAlw",
+          "commit": {
+            "abbreviatedOid": "d615a19"
+          },
+          "author": "aaronpk",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:51:40Z",
+          "updatedAt": "2026-07-01T21:51:40Z",
+          "comments": [
+            {
+              "originalPosition": 105,
+              "body": "```suggestion\nWould create the following Content-Digest header:\n```",
+              "createdAt": "2026-07-01T21:51:40Z",
+              "updatedAt": "2026-07-01T21:51:40Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvYdCw",
+          "commit": {
+            "abbreviatedOid": "cec310a"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:53:14Z",
+          "updatedAt": "2026-07-01T21:53:14Z",
+          "comments": [
+            {
+              "originalPosition": 50,
+              "body": "I would rather we explicitly import the terms in the appropriate section, I busy haven't done that in the text yet. I would prefer to remove this expansion and handle it that way in the future",
+              "createdAt": "2026-07-01T21:53:14Z",
+              "updatedAt": "2026-07-01T21:53:14Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvY1IQ",
+          "commit": {
+            "abbreviatedOid": "cec310a"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T21:54:22Z",
+          "updatedAt": "2026-07-01T21:54:22Z",
+          "comments": [
+            {
+              "originalPosition": 28,
+              "body": "Made one typo edit but we're good",
+              "createdAt": "2026-07-01T21:54:22Z",
+              "updatedAt": "2026-07-01T21:54:22Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABEvb_hw",
+          "commit": {
+            "abbreviatedOid": "a73049f"
+          },
+          "author": "aaronpk",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-01T22:04:50Z",
+          "updatedAt": "2026-07-01T22:04:50Z",
+          "comments": [
+            {
+              "originalPosition": 50,
+              "body": "```suggestion\nTo bind an access token to a key, the AS needs to know which key to bind to which token. This specification defines two common methods depending on the needs of the client:\n```",
+              "createdAt": "2026-07-01T22:04:50Z",
+              "updatedAt": "2026-07-01T22:04:50Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
