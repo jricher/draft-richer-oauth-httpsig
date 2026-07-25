@@ -34,6 +34,7 @@ normative:
     DYNREG: RFC7591
     JSON: RFC8259
     HTTPAUTH: RFC7235
+    RFC8792:
 
 informative:
     I-D.ietf-oauth-signed-http-request:
@@ -95,41 +96,21 @@ A client pre-registering its keys for {{HTTPSIG}} binding MUST include the key i
 
 A pre-registered key MAY be a shared secret (such as for use in an HMAC signature), but public key cryptography is RECOMMENDED.
 
+If the key is pre-registered, the signature algorithm MUST be derived from the indicated key and the `alg` signature parameter MUST NOT be used.
+
 Note that pre-registration can occur statically or dynamically (such as by using {{DYNREG}}), as long as the key is associated with the client's `client_id` before the token request is made.
 
 ## Token Request Key Introduction {#runtime}
 
-Instead of pre-registering a key, a client can introduce its key during the token request in the same fashion as {{DPOP}}.
+Instead of pre-registering a key, a client can introduce its key during the token request in a similar fashion as {{DPOP}}.
 
-The client MUST present its public key in the Signature-Key header field. The field is an HTTP Structured Field consisting of a Binary value containing the bytes of the {{JSON}} serialized {{JWK}} form of the key material.
+To use this mode, the client MUST:
 
-The JWK MUST have a `kid` field. The key MUST be a public key (and neither a private key nor a shared secret key). The JWK MUST have an `alg` value that indicates a signature algorithm.
+* Include the `alg` signature parameter with a valid value from the HTTP Message Signatures Algorithms Registry indicating an asymmetric signature algorithm.
+* Present its public key in the as described in {{embed-keys}}.
+* Include the `kid` signature parameter uniquely identifying the key.
 
-For example, the following JWK public key:
-
-~~~ json
-{
-    "kty": "OKP",
-    "use": "sig",
-    "crv": "Ed25519",
-    "kid": "j-0Ny45NWmqGq6GQ",
-    "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
-    "alg": "EdDSA"
-}
-~~~
-
-Can be encoded to the following Signature-Key field value (this example uses a compact JSON serialization that removes whitespace):
-
-~~~
-NOTE: '\' line wrapping per RFC 8792
-
-Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
-  iwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2Vm\
-  USIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTN\
-  zIiwiYWxnIjoiRWREU0EifQ==:
-~~~
-
-\[\[ Editor's note: this is a really awkward way to encode a JWK. We could try to break apart the JSON but there's not a 1:1 map to HTTP Structured Fields we can rely on. We could just put the minified JSON into a string but the double quotes would need to be escaped. This is the least bad version I could come up with right now. \]\]
+The included key MUST be appropriate for the indicated algorithm.
 
 ## Token Request {#request}
 
@@ -158,10 +139,6 @@ A client using this method MUST sign the token endpoint request using {{HTTPSIG}
 - `@target-uri` the full request URI of the request (note that this includes the scheme, authority, path, and query)
 - `content-digest` the digest of the request body
 
-If a signature key is presented at runtime as described in {{runtime}}, the covered components MUST include:
-
-- `signature-key` the encoded public key used to sign this request
-
 The covered components MUST include the client's authentication, if available. If using HTTP Basic, this means including the `authorization` field.
 
 The signature MUST include the following parameters:
@@ -169,9 +146,9 @@ The signature MUST include the following parameters:
 - `created` a timestamp for signature creation; this MUST be within a small number of seconds of issuance (e.g. 30 seconds to account for clock skew)
 - `nonce` a random unique value that the AS can use to prevent signature replay within the small validity time window
 - `tag` a string indicating that this is being used for requesting a bound token, MUST be the value "httpsig-oauth-token-request"
-- `keyid` the `kid` value for the key to be used for binding the token; if client uses pre-registered keys as in {{preregister}}, the value MUST match the `httpsig_bound_access_token_kid` value; if the key is presented at runtime as in {{runtime}}, the value MUST match the `kid` of the JWK in the Signature-Key field
+- `keyid` the `kid` value for the key to be used for binding the token; if client uses pre-registered keys as in {{preregister}}, the value MUST match the `httpsig_bound_access_token_kid` value
 
-The signature algorithm MUST be derived from the indicated key. The `alg` signature parameter MUST NOT be used.
+Additionally, if the key is presented at runtime, the parameters and public key MUST be included as signature parameters as defined in {{runtime}}.
 
 An example request to the token endpoint (using a runtime-provided key here) can look like the following:
 
@@ -195,6 +172,34 @@ Signature: sig1=:AWyxebrJ6u8CMi0B3TyX9G1G3XT45UW5zIn8mhsyXdmjTUtGS+1M\
 grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&\
 redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
 ~~~
+
+# Embedding a Public Key Value {#embed-keys}
+
+When encoding a public key value in a runtime request as in {{runtime}}, the client includes the public key material appropriate to the signature algorithm being used.
+
+## Elliptic Curve
+
+If the `alg` value is `ecdsa-p256-sha256` or `ecdsa-p384-sha384`, the public key is encoded in two additional signature parameters and values attached to the signature input:
+
+- `pub_key_x`: the big-endian encoded, zero-padded bytes of the key's X value, encoded as a Byte Sequence
+- `pub_key_y`: the big-endian encoded, zero-padded bytes of the key's Y value, encoded as a Byte Sequence
+
+For `ecdsa-p256-sha256`, the key values are padded to exactly 32 bytes each. For `ecdsa-p384-sha384`, the key values are padded to exactly 48 bytes each.
+
+## Edwards Elliptic Curve
+
+If the `alg` value is `ed25519`, the public key is encoded in one additional signature parameter and value attached to the signature input:
+
+- `pub_key_a`: the little-endian encoded compressed Edwards point defined in {{RFC8792}}, encoded as a Byte Sequence
+
+The key value is exactly 32 bytes in length.
+
+## RSA
+
+If the `alg` value is `rsa-pss-sha512` or `rsa-v1_5-sha256`, the public key is encoded in two additional signature parameters and values attached to the signature input:
+
+- `pub_key_n`: the big-endian encoded unsigned modulus of the key (no sign byte and no leading 0x00 octet), encoded as a Byte Sequence
+- `pub_key_e`: the big-endian encoded exponent of the key, encoded as a Byte Sequence
 
 # Issuing an HTTP Message Signature Bound Access Token {#issuing}
 
