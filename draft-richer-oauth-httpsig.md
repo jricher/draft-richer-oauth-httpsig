@@ -249,7 +249,7 @@ The signature MUST include the following parameters:
 - `created` a timestamp for signature creation; this MUST be within a small number of seconds of issuance (e.g. 30 seconds to account for clock skew)
 - `nonce` a random unique value that the AS can use to prevent signature replay within the small validity time window
 - `tag` a string indicating that this is being used for requesting a bound token, MUST be the value "httpsig-oauth"
-- `keyid` the `kid` value for the key used to sign the request
+- `keyid` the identifier for the key used to sign the request
 
 The client MUST NOT include an `alg` signature parameter.
 
@@ -259,16 +259,18 @@ For example, the following signed request includes a signature with the needed p
 {::include tools/examples/present-request-signed.http}
 ~~~
 
-# Validating an HTTP Message Signature Bound Access Token Request {#validating}
+# Validating an HTTP Message Signature Bound Resource Request {#validating}
 
 In order for a request protected by an HTTP Message Signature bound access token to be considered valid, the RS MUST perform the following checks:
 
-- The presented signature validates using the key associated with the token
-- The signature validates using the algorithm associated with the key
+- The presented signature validates using the key bound to the token
+- The signature validates using the HTTP_VERIFY algorithm associated with the key
+- The `keyid` value matches the identifier for the key bound to the token
 - The `created` value is not too far in the past (e.g. 30 seconds to account for clock skew and network delays)
 - The `nonce` value has not been previously used within the time validity window of this request
 - The `tag` value is "httpsig-oauth"
-- The covered components and parameters include all items enumerated in {{presenting}}
+- The covered components and parameters include all items enumerated in {{presenting}}, including the Authorization header field
+- The `alg` parameter is not present
 
 If the request includes an entity body (such as a POST, PUT, or QUERY) and a digest as per {{DIGEST}}, the RS MUST validate the digest.
 
@@ -277,25 +279,18 @@ If the request includes multiple signatures tagged "httpsig-oauth", all signatur
 For example, to validate the request:
 
 ~~~ http-message
-{::include tools/examples/present-request-signed.http}
+{::include tools/examples/rs-request-signed.http}
 ~~~
 
-The RS determines the key bound to the token and validates the `kid` value against that key. The RS determines the algorithm from the key and performs signature validation per {{HTTPSIG}} on the
+The RS determines the key bound to the token (in this example, assume the RS introspects the token to get the key material) and validates the `kid` value against that key's identifier. The RS determines the algorithm from the key material.
 
-In this example, the client has a key with the `kid` value of `test-key-rsa-pss` which uses the JWA `alg` value of `PS512`. The signature input string is:
+In this example, the client has a key with the `kid` value of `test-key-ecdsa-p256`. The signature input string is:
 
 ~~~
 {::include tools/examples/rs-sig-base.sigbase}
 ~~~
 
-This results in the following signed HTTP message, including the access token.
-
-~~~ http-message
-{::include tools/examples/rs-request-signed.http}
-~~~
-
-An RS receiving such a signed message and a bound access token MUST verify the HTTP Message Signature as described in {{HTTPSIG}}. The RS MUST verify that all required portions of the HTTP request are covered by the signature by examining the contents of the signature parameters.
-
+The RS then calculates the signature validation against the signature base using the key using the algorithm appropriate HTTP_VERIFY function, per {{HTTPSIG}}.
 
 # Acknowledgements {#Acknowledgements}
 
@@ -322,6 +317,13 @@ An RS receiving such a signed message and a bound access token MUST verify the H
 --- back
 
 # Document History {#history}
+
+- -03
+    - Added co-authors
+    - Changed inline key presentation from header to signature parameter
+
+- -02
+    - Added co-author
 
 - -01
     - Added key binding semantics
@@ -356,3 +358,7 @@ Keys for this purpose could be introduced during a {{PAR}} request phase, as par
 ## Accept-Signature Support
 
 The `Accept-Signature` mechanism in {{HTTPSIG}} allows for runtime discovery of not only the applicability of signatures but also the expected coverage, for particular uses.
+
+# Test Vectors
+
+\[\[ Editor's note: we really should have end-to-end test vectors with keys and stuff all in here, not just inline. \]\]
