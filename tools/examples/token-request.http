@@ -2,7 +2,5 @@ POST /token HTTP/1.1
 Host: server.example.com
 Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
 Content-Type: application/x-www-form-urlencoded
-Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5Iiwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2VmUSIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTNzIiwiYWxnIjoiRWREU0EifQ==:
-Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
 
 grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb

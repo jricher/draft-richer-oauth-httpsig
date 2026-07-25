@@ -34,7 +34,7 @@ normative:
     DYNREG: RFC7591
     JSON: RFC8259
     HTTPAUTH: RFC7235
-    RFC8792:
+    RFC8032:
 
 informative:
     I-D.ietf-oauth-signed-http-request:
@@ -121,16 +121,13 @@ Additionally, the client MUST calculate and include the digest of the request bo
 For example, a form-encoded request body consisting of:
 
 ~~~
-NOTE: '\' line wrapping per RFC 8792
-
-grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA\
-&redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+{::include tools/examples/token-request-body.form}
 ~~~
 
 Would create the following Content-Digest header:
 
 ~~~
-Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
+{::include tools/examples/content-digest.hdr}
 ~~~
 
 A client using this method MUST sign the token endpoint request using {{HTTPSIG}} with the appropriate key. The covered components MUST include:
@@ -153,24 +150,7 @@ Additionally, if the key is presented at runtime, the parameters and public key 
 An example request to the token endpoint (using a runtime-provided key here) can look like the following:
 
 ~~~ http-message
-POST /token HTTP/1.1
-Host: server.example.com
-Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
-Content-Type: application/x-www-form-urlencoded
-Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
-  iwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2Vm\
-  USIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTN\
-  zIiwiYWxnIjoiRWREU0EifQ==:
-Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
-Signature-Input: sig1=("@method" "@target-uri" "content-digest" \
-  "signature-key" "authorization");created=1618884473\
-  ;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCgefQ"\
-  ;nonce="b3k2pp5k7z-50gnX1b06";tag="httpsig-oauth-token-request"
-Signature: sig1=:AWyxebrJ6u8CMi0B3TyX9G1G3XT45UW5zIn8mhsyXdmjTUtGS+1M\
-  XiydKv5z0GLCrMhVSFe691jF98DRNNSPAg==:
-
-grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&\
-redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+{::include tools/examples/token-request-signed.http}
 ~~~
 
 # Embedding a Public Key Value {#embed-keys}
@@ -190,7 +170,7 @@ For `ecdsa-p256-sha256`, the key values are padded to exactly 32 bytes each. For
 
 If the `alg` value is `ed25519`, the public key is encoded in one additional signature parameter and value attached to the signature input:
 
-- `pub_key_a`: the little-endian encoded compressed Edwards point defined in {{RFC8792}}, encoded as a Byte Sequence
+- `pub_key_a`: the little-endian encoded compressed Edwards point defined in {{RFC8032}}, encoded as a Byte Sequence
 
 The key value is exactly 32 bytes in length.
 
@@ -276,17 +256,7 @@ The client MUST NOT include an `alg` signature parameter.
 For example, the following signed request includes a signature with the needed parameters:
 
 ~~~ http-message
-NOTE: '\' line wrapping per RFC 8792
-
-GET /foo HTTP/1.1
-Host: example.com
-Date: Mon, 20 Apr 2026 02:07:55 GMT
-Authorization: HTTPSig 2340897.34j123-134uh2345n
-Signature-Input: sig1=("@method" "@target-uri" "authorization")\
-  ;created=1776650875;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCg\
-  efQ";nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
-Signature: sig1=:kFJC2WoBbrQc8tsKiowIb8oeIA533qmKvzdKf8kndJ7kaLxGmm2v\
-  9+IPB8kLE0WUea8KryJGSV7ji1apLkeKBg==:
+{::include tools/examples/present-request-signed.http}
 ~~~
 
 # Validating an HTTP Message Signature Bound Access Token Request {#validating}
@@ -307,17 +277,7 @@ If the request includes multiple signatures tagged "httpsig-oauth", all signatur
 For example, to validate the request:
 
 ~~~ http-message
-NOTE: '\' line wrapping per RFC 8792
-
-GET /foo HTTP/1.1
-Host: example.com
-Date: Mon, 20 Apr 2026 02:07:55 GMT
-Authorization: HTTPSig 2340897.34j123-134uh2345n
-Signature-Input: sig1=("@method" "@target-uri" "authorization")\
-  ;created=1776650875;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCg\
-  efQ";nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
-Signature: sig1=:kFJC2WoBbrQc8tsKiowIb8oeIA533qmKvzdKf8kndJ7kaLxGmm2v\
-  9+IPB8kLE0WUea8KryJGSV7ji1apLkeKBg==:
+{::include tools/examples/present-request-signed.http}
 ~~~
 
 The RS determines the key bound to the token and validates the `kid` value against that key. The RS determines the algorithm from the key and performs signature validation per {{HTTPSIG}} on the
@@ -325,30 +285,13 @@ The RS determines the key bound to the token and validates the `kid` value again
 In this example, the client has a key with the `kid` value of `test-key-rsa-pss` which uses the JWA `alg` value of `PS512`. The signature input string is:
 
 ~~~
-"@request-target": get /foo
-"host": example.org
-"authorization": HTTPSig 2340897.34j123-134uh2345n
-"@signature-params": ("@request-target" "host" "authorization")\
-  ;created=1618884475;keyid="test-key-rsa-pss"
+{::include tools/examples/rs-sig-base.sigbase}
 ~~~
 
 This results in the following signed HTTP message, including the access token.
 
 ~~~ http-message
-NOTE: '\' line wrapping per RFC 8792
-
-GET /foo HTTP/1.1
-Host: example.com
-Date: Tue, 20 Apr 2021 02:07:55 GMT
-Authorization: HTTPSig 2340897.34j123-134uh2345n
-Signature-Input: sig1=("@request-target" "host" "authorization")\
-  ;created=1618884475;keyid="test-key-rsa-pss"
-Signature: sig1=:o+Fy/a6IIWhHwnMFhsHqfXEpheWGBMOU3pheT50zA8rL5F8Nur\
-  xBKAPylMGBWYCKH5Bd+TB0Co6vqANlXyOCM9Zr5c/UmR5WGex5/OgJJmfN7gOVOH5\
-  pB2Zxa233xsohfwo9liBlctukN5//E3F04rKjIkoeTFJiS+hMcOzn29esgFSEl4Jy\
-  oO5Q8snMIsC56ZAPYwU7rJis1Wvl6Y9/9tpW6gIn/SHwArhPQSAb0zZy6mCiw654n\
-  CaKw5NYJ9S0DZlnV4T7nJtdZsHOkddF6kH4WVka3ev0xONI5kYkEdR1Gw0VAE9thi\
-  p+3/aFoUVTJ/1J6JfehZpXqehwv3KNoQ==:
+{::include tools/examples/rs-request-signed.http}
 ~~~
 
 An RS receiving such a signed message and a bound access token MUST verify the HTTP Message Signature as described in {{HTTPSIG}}. The RS MUST verify that all required portions of the HTTP request are covered by the signature by examining the contents of the signature parameters.

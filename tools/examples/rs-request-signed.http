@@ -1,0 +1,14 @@
+NOTE: '\' line wrapping per RFC 8792
+
+GET /foo HTTP/1.1
+Host: example.com
+Date: Tue, 20 Apr 2021 02:07:55 GMT
+Authorization: HTTPSig 2340897.34j123-134uh2345n
+Signature-Input: sig1=("@request-target" "host" "authorization")\
+  ;created=1618884475;keyid="test-key-rsa-pss"
+Signature: sig1=:o+Fy/a6IIWhHwnMFhsHqfXEpheWGBMOU3pheT50zA8rL5F8Nur\
+  xBKAPylMGBWYCKH5Bd+TB0Co6vqANlXyOCM9Zr5c/UmR5WGex5/OgJJmfN7gOVOH5\
+  pB2Zxa233xsohfwo9liBlctukN5//E3F04rKjIkoeTFJiS+hMcOzn29esgFSEl4Jy\
+  oO5Q8snMIsC56ZAPYwU7rJis1Wvl6Y9/9tpW6gIn/SHwArhPQSAb0zZy6mCiw654n\
+  CaKw5NYJ9S0DZlnV4T7nJtdZsHOkddF6kH4WVka3ev0xONI5kYkEdR1Gw0VAE9thi\
+  p+3/aFoUVTJ/1J6JfehZpXqehwv3KNoQ==:
