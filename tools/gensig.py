@@ -540,9 +540,33 @@ class InspectableSigner(HTTPMessageSigner):
 # Output formatting
 # ---------------------------------------------------------------------------
 
+RFC8792_NOTE = "NOTE: '\\' line wrapping per RFC 8792"
+
+
+def content_digest_sha256(body: bytes) -> str:
+    """Return the Content-Digest header value for a SHA-256 body digest."""
+    import hashlib
+    digest = hashlib.sha256(body).digest()
+    cd = http_sfv.Dictionary()
+    cd["sha-256"] = digest
+    return str(cd)
+
+
 def _artwork_block(content: str, label: str = "") -> str:
     fence = f"~~~ {label}".rstrip()
     return f"{fence}\n{content}\n~~~"
+
+
+def _with_wrap_note(wrapped: str) -> str:
+    """Prepend the RFC 8792 note if the content contains line wrapping.
+
+    Rendered outputs that use the single-backslash fold must carry the note
+    (and a following blank line) so the wrapping is self-describing.
+    """
+    if any(line.endswith("\\") and not line.endswith("\\\\")
+           for line in wrapped.splitlines()):
+        return f"{RFC8792_NOTE}\n\n{wrapped}"
+    return wrapped
 
 
 def format_output(
@@ -626,6 +650,19 @@ def build_arg_parser() -> argparse.ArgumentParser:
                    help="Include public key material in the output")
     p.add_argument("--show-original", action="store_true",
                    help="Include the original (unsigned) request in the output")
+    # Direct output targets: each writes only that artifact's content, with no
+    # section label or fence, prefixed with the RFC 8792 note when wrapped.
+    # Suitable for kramdown-rfc {::include ...} files.
+    p.add_argument("--content-digest", action="store_true",
+                   help="Compute a SHA-256 Content-Digest of the request body "
+                        "and add it to the message before signing")
+    p.add_argument("--out-signed", type=Path, default=None,
+                   help="Write the signed HTTP message to this file")
+    p.add_argument("--out-sig-base", type=Path, default=None,
+                   help="Write the signature base to this file")
+    p.add_argument("--out-digest", type=Path, default=None,
+                   help="Write the Content-Digest header line to this file "
+                        "(implies --content-digest)")
     return p
 
 
@@ -639,6 +676,13 @@ def main() -> None:
     request_text = args.request.read_text()
     request = parse_http_request(request_text)
     original = parse_http_request(request_text)  # keep a clean copy
+
+    # Content-Digest: compute over the body and add before signing so it can
+    # be a covered component. --out-digest implies computing the digest.
+    digest_value: Optional[str] = None
+    if args.content_digest or args.out_digest is not None:
+        digest_value = content_digest_sha256(request.body or b"")
+        request.headers["Content-Digest"] = digest_value
 
     # --runtime-key forces the alg parameter to be present
     include_alg = args.include_alg_param or args.runtime_key
@@ -672,6 +716,31 @@ def main() -> None:
     )
 
     sig_base = signer.last_sig_base or ""
+
+    # Direct artifact outputs: clean content, NOTE-prefixed when wrapped.
+    if args.out_signed is not None:
+        content = _with_wrap_note(wrap_http_block(request.render(), args.width))
+        args.out_signed.write_text(content + "\n")
+        print(f"Wrote signed message to {args.out_signed}", file=sys.stderr)
+
+    if args.out_sig_base is not None:
+        content = _with_wrap_note(wrap_sig_base(sig_base, args.width))
+        args.out_sig_base.write_text(content + "\n")
+        print(f"Wrote signature base to {args.out_sig_base}", file=sys.stderr)
+
+    if args.out_digest is not None:
+        content = _with_wrap_note(
+            wrap_line("Content-Digest: " + (digest_value or ""),
+                      args.width, is_binary=True))
+        args.out_digest.write_text(content + "\n")
+        print(f"Wrote content-digest to {args.out_digest}", file=sys.stderr)
+
+    # If any direct output target was given, skip the combined stdout report
+    # unless an explicit --output was also requested.
+    any_target = any(t is not None for t in
+                     (args.out_signed, args.out_sig_base, args.out_digest))
+    if any_target and args.output is None:
+        return
 
     output = format_output(
         request_original=original,
