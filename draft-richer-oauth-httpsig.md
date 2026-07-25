@@ -21,6 +21,10 @@ author:
     name: Aaron Parecki
     organization: Okta
     email: aaron@parecki.com
+  - ins: P. Bastian
+    name: Paul Bastian
+    organization: Bundesdruckerei
+    email: paul.bastian@posteo.de
 
 normative:
     BCP195:
