@@ -478,15 +478,54 @@ def parse_http_request(text: str) -> HTTPRequest:
 # Inspectable signer — captures signature base before returning
 # ---------------------------------------------------------------------------
 
+def runtime_key_params(public_pem: bytes, algorithm: type) -> "collections.OrderedDict":
+    """Map a public key into HTTP Message Signature parameters per {#embed-keys}.
+
+    Returns an OrderedDict of parameter name -> bytes (serialized as a Byte
+    Sequence by http_sfv). Covers EC (pub_key_x/pub_key_y), Ed25519
+    (pub_key_a), and RSA (pub_key_n/pub_key_e).
+    """
+    from cryptography.hazmat.primitives.asymmetric import ec, ed25519, rsa
+
+    pub = load_pem_public_key(public_pem)
+    params: "collections.OrderedDict[str, bytes]" = collections.OrderedDict()
+
+    if algorithm in (sig_algorithms.ECDSA_P256_SHA256,) or isinstance(pub, ec.EllipticCurvePublicKey):
+        numbers = pub.public_numbers()
+        size = (pub.curve.key_size + 7) // 8
+        params["pub_key_x"] = numbers.x.to_bytes(size, "big")
+        params["pub_key_y"] = numbers.y.to_bytes(size, "big")
+    elif isinstance(pub, ed25519.Ed25519PublicKey):
+        params["pub_key_a"] = pub.public_bytes(Encoding.Raw, PublicFormat.Raw)
+    elif isinstance(pub, rsa.RSAPublicKey):
+        numbers = pub.public_numbers()
+        n_len = (numbers.n.bit_length() + 7) // 8
+        e_len = (numbers.e.bit_length() + 7) // 8
+        params["pub_key_n"] = numbers.n.to_bytes(n_len, "big")
+        params["pub_key_e"] = numbers.e.to_bytes(e_len, "big")
+    else:
+        raise ValueError(f"Cannot embed public key of type {type(pub).__name__}")
+
+    return params
+
+
 class InspectableSigner(HTTPMessageSigner):
-    """HTTPMessageSigner that stores the last signature base for inspection."""
+    """HTTPMessageSigner that stores the last signature base for inspection.
+
+    If ``extra_params`` is set, those parameters are merged into every
+    signature's parameters so they appear in Signature-Input and are covered
+    by the signature base (used for runtime public-key embedding).
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.last_sig_base: Optional[str] = None
         self.last_sig_elements: Optional[dict] = None
+        self.extra_params: Optional[dict] = None
 
     def _build_signature_base(self, message, *, covered_component_ids, signature_params):
+        if self.extra_params:
+            signature_params.update(self.extra_params)
         result = super()._build_signature_base(
             message,
             covered_component_ids=covered_component_ids,
@@ -573,6 +612,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
                    help="Application-specific tag for the signature")
     p.add_argument("--include-alg-param", action="store_true",
                    help="Include the 'alg' parameter in Signature-Input")
+    p.add_argument("--runtime-key", action="store_true",
+                   help="Embed the public key as signature parameters per the "
+                        "draft's Embedding a Public Key Value section "
+                        "(pub_key_*). Implies --include-alg-param.")
     p.add_argument("--output", "-o", type=Path, default=None,
                    help="Output file (default: stdout)")
     p.add_argument("--width", "-w", type=int, default=69,
@@ -597,11 +640,19 @@ def main() -> None:
     request = parse_http_request(request_text)
     original = parse_http_request(request_text)  # keep a clean copy
 
+    # --runtime-key forces the alg parameter to be present
+    include_alg = args.include_alg_param or args.runtime_key
+
     # Build signer
     signer = InspectableSigner(
         signature_algorithm=key.algorithm,
         key_resolver=key.as_resolver(),
     )
+
+    if args.runtime_key:
+        if key.public_pem is None:
+            raise SystemExit("--runtime-key requires a key with public material")
+        signer.extra_params = runtime_key_params(key.public_pem, key.algorithm)
 
     created_dt = (
         datetime.datetime.fromtimestamp(args.created)
@@ -616,7 +667,7 @@ def main() -> None:
         nonce=args.nonce,
         tag=args.tag,
         label=args.label,
-        include_alg=args.include_alg_param,
+        include_alg=include_alg,
         covered_component_ids=args.covered,
     )
 
