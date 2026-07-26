@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-23T02:51:53.136398+00:00",
+  "timestamp": "2026-07-26T02:54:22.386524+00:00",
   "repo": "jricher/draft-richer-oauth-httpsig",
   "labels": [
     {
@@ -49,7 +49,40 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 3,
+      "id": "I_kwDOTI9Xz88AAAABKLFK9w",
+      "title": "Add guidance for encoding key binding in JWT-based access tokens",
+      "url": "https://github.com/jricher/draft-richer-oauth-httpsig/issues/3",
+      "state": "OPEN",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Either:\n - use `jkt` for both pre-registered and inline\n - use `jkt` for inline and `kid` for pre-registered",
+      "createdAt": "2026-07-25T20:57:58Z",
+      "updatedAt": "2026-07-25T20:57:58Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOTI9Xz88AAAABKLF7Ew",
+      "title": "Explain how to use this draft in conjunciton with Attestaiton-Based Client Authentication",
+      "url": "https://github.com/jricher/draft-richer-oauth-httpsig/issues/4",
+      "state": "OPEN",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "- get assurance about the key from Client Attestaiotn JWT\n- reuse HTTP Message signature as [Proof of possession](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-attestation-based-client-auth-10#name-proof-of-possession)",
+      "createdAt": "2026-07-25T21:01:16Z",
+      "updatedAt": "2026-07-25T21:01:16Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
   "pulls": [
     {
       "number": 1,
@@ -419,6 +452,151 @@
           ]
         }
       ]
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOTI9Xz872YyE5",
+      "title": "Inline key presentation",
+      "url": "https://github.com/jricher/draft-richer-oauth-httpsig/pull/2",
+      "state": "OPEN",
+      "author": "jricher",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "- **fix lint**\n- **Extract generatable examples into include files**\n- **Add --runtime-key to embed public key as signature parameters**\n- **Add example regeneration script and regenerate examples**\n- **Update verification examples.**\n- **clean up validation section**\n",
+      "createdAt": "2026-07-25T19:47:16Z",
+      "updatedAt": "2026-07-25T21:13:16Z",
+      "baseRepository": "jricher/draft-richer-oauth-httpsig",
+      "baseRefName": "main",
+      "baseRefOid": "1c16368b103a3967ba173aa20a61df3fd6042cc3",
+      "headRepository": "jricher/draft-richer-oauth-httpsig",
+      "headRefName": "inline-key",
+      "headRefOid": "d0b36f758a54bbe401f27da2e6a3d8e22874acc9",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHOoq7w",
+          "commit": {
+            "abbreviatedOid": "d0b36f7"
+          },
+          "author": "c2bo",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "I believe there is some confusion with `kid` vs `keyid`, although i am not sure i got everything right with the proposed changes.",
+          "createdAt": "2026-07-25T20:02:56Z",
+          "updatedAt": "2026-07-25T20:23:50Z",
+          "comments": [
+            {
+              "originalPosition": 123,
+              "body": "This should be `keyid` i assume?\n```suggestion\n* Include the `keyid` signature parameter uniquely identifying the key.\n```",
+              "createdAt": "2026-07-25T20:02:56Z",
+              "updatedAt": "2026-07-25T20:23:50Z"
+            },
+            {
+              "originalPosition": 313,
+              "body": "```suggestion\nThe RS determines the key bound to the token (in this example, assume the RS introspects the token to get the key material) and validates the `kid` value against that the `keyid` in the signature input. The RS determines the algorithm from the key material.\n```",
+              "createdAt": "2026-07-25T20:09:20Z",
+              "updatedAt": "2026-07-25T20:23:50Z"
+            },
+            {
+              "originalPosition": 180,
+              "body": "```suggestion\n- `keyid` the identifier for the key to be used for binding the token (matching `kid` in the token); if client uses pre-registered keys as in {{preregister}}, the value MUST match the `httpsig_bound_access_token_kid` value\n```",
+              "createdAt": "2026-07-25T20:10:05Z",
+              "updatedAt": "2026-07-25T20:23:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHOwgRQ",
+          "commit": {
+            "abbreviatedOid": "d0b36f7"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-25T21:09:33Z",
+          "updatedAt": "2026-07-25T21:09:33Z",
+          "comments": [
+            {
+              "originalPosition": 122,
+              "body": "This is missing the parameter name.",
+              "createdAt": "2026-07-25T21:09:33Z",
+              "updatedAt": "2026-07-25T21:09:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHOxDog",
+          "commit": {
+            "abbreviatedOid": "d0b36f7"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-25T21:11:38Z",
+          "updatedAt": "2026-07-25T21:11:38Z",
+          "comments": [
+            {
+              "originalPosition": 122,
+              "body": "```suggestion\n* Include its public key in the key type specific parameters as described in {{embed-keys}}.\n```",
+              "createdAt": "2026-07-25T21:11:38Z",
+              "updatedAt": "2026-07-25T21:11:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHOxW5A",
+          "commit": {
+            "abbreviatedOid": "d0b36f7"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-25T21:13:16Z",
+          "updatedAt": "2026-07-25T21:13:16Z",
+          "comments": [
+            {
+              "originalPosition": 123,
+              "body": "I think the draft text should mandate that only either of them MUST be present",
+              "createdAt": "2026-07-25T21:13:16Z",
+              "updatedAt": "2026-07-25T21:13:16Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOTI9Xz872ZpbY",
+      "title": "Add Paul Bastian to the authors list",
+      "url": "https://github.com/jricher/draft-richer-oauth-httpsig/pull/5",
+      "state": "OPEN",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-07-25T21:03:30Z",
+      "updatedAt": "2026-07-25T21:03:31Z",
+      "baseRepository": "jricher/draft-richer-oauth-httpsig",
+      "baseRefName": "main",
+      "baseRefOid": "1c16368b103a3967ba173aa20a61df3fd6042cc3",
+      "headRepository": "jricher/draft-richer-oauth-httpsig",
+      "headRefName": "pb/author",
+      "headRefOid": "7512d799b6f7bbdee834b9274d9e61edac0a8ad9",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
