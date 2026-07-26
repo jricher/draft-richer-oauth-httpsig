@@ -5,8 +5,10 @@
 OAUTH                                                     J. Richer, Ed.
 Internet-Draft                                                   MongoDB
 Intended status: Standards Track                              A. Parecki
-Expires: 2 January 2027                                             Okta
-                                                             1 July 2026
+Expires: 27 January 2027                                            Okta
+                                                              P. Bastian
+                                                         Bundesdruckerei
+                                                            26 July 2026
 
 
      OAuth Proof of Possession Tokens with HTTP Message Signatures
@@ -44,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 January 2027.
+   This Internet-Draft will expire on 27 January 2027.
 
 Copyright Notice
 
@@ -670,9 +672,9 @@ Table of Contents
    [I-D.ietf-oauth-client-id-metadata-document]
               Parecki, A. and E. Smith, "OAuth Client ID Metadata
               Document", Work in Progress, Internet-Draft, draft-ietf-
-              oauth-client-id-metadata-document-01, 1 March 2026,
+              oauth-client-id-metadata-document-02, 6 July 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-oauth-
-              client-id-metadata-document-01>.
+              client-id-metadata-document-02>.
 
    [I-D.ietf-oauth-signed-http-request]
               Richer, J., Bradley, J., and H. Tschofenig, "A Method for
@@ -768,3 +770,8 @@ Authors' Addresses
    Aaron Parecki
    Okta
    Email: aaron@parecki.com
+
+
+   Paul Bastian
+   Bundesdruckerei
+   Email: paul.bastian@posteo.de
