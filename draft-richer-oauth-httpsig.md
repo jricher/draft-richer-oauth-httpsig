@@ -25,6 +25,14 @@ author:
     name: Paul Bastian
     organization: Bundesdruckerei
     email: paul.bastian@posteo.de
+  - ins: F. Skokan
+    name: Filip Skokan
+    organization: Okta
+    email: panva.ip@gmail.com
+  - ins: C. Bormann
+    name: Christian Bormann
+    organization: SPRIND
+    email: chris.bormann@gmx.de
 
 normative:
     BCP195:
@@ -397,4 +405,3 @@ The `Accept-Signature` mechanism in {{HTTPSIG}} allows for runtime discovery of 
 # Test Vectors
 
 \[\[ Editor's note: we really should have end-to-end test vectors with keys and stuff all in here, not just inline. \]\]
-
