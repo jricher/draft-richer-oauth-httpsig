@@ -4,8 +4,11 @@
 
 OAUTH                                                     J. Richer, Ed.
 Internet-Draft                                                   MongoDB
-Intended status: Standards Track                            27 July 2026
-Expires: 28 January 2027
+Intended status: Standards Track                              A. Parecki
+Expires: 28 January 2027                                            Okta
+                                                              P. Bastian
+                                                         Bundesdruckerei
+                                                            27 July 2026
 
 
      OAuth Proof of Possession Tokens with HTTP Message Signatures
@@ -65,6 +68,7 @@ Table of Contents
      1.1.  Terminology
    2.  Requesting an HTTP Message Signature Bound Access Token
      2.1.  Pre-Registration of Keys
+       2.1.1.  Example Client Registration
      2.2.  Token Request Key Introduction
      2.3.  Token Request
    3.  Embedding a Public Key Value
@@ -91,23 +95,25 @@ Table of Contents
      B.4.  PAR Key Introduction
      B.5.  Accept-Signature Support
    Appendix C.  Test Vectors
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
    The OAuth 2.0 framework provides methods for clients to get delegated
    access tokens from an authorization server for accessing protected
-   resources.  The access tokens at the center of OAuth 2.0 can be bound
-   to a variety of different mechanisms, including bearer tokens, mutual
-   TLS, or other presentation mechanisms.
+   resources.
 
-   Bearer tokens are simple to implement but also have the significant
-   security downside of allowing anyone who sees the access token to use
-   that token.  [HTTPSIG] defines a generic mechanism that is used to
-   sign HTTP requests and responses.
+   OAuth access tokens can be bearer tokens, or bound to a variety of
+   mechanisms including mutual TLS, DPoP, or other presentation
+   mechanisms.  Bearer tokens are simple to implement but also have the
+   significant security downside of allowing anyone who sees the access
+   token to use that token.
+
+   [HTTPSIG] defines a generic mechanism that is used to sign HTTP
+   requests and responses.
 
    This specification defines means to bind access tokens to a key held
-   by the client, a token type value and token response for indicating
+   by the client, a token type value, a token response for indicating
    that a token is meant to be used with [HTTPSIG] presentation, and a
    method for presenting bound access tokens in HTTP requests using
    [HTTPSIG].
@@ -148,11 +154,14 @@ Table of Contents
       during the token request phase of [OAUTH]
 
    As part of its registration, a client MUST indicate which method it
-   will use.
+   will use, using either the httpsig_key_binding_method client
+   registration metadata parameter defined (TBD) in Section 8 when using
+   Dynamic Client Registration ([DYNREG]) or Client ID Metadata Document
+   ([I-D.ietf-oauth-client-id-metadata-document]), or via an out of band
+   method.
 
-   [[ Editor's note: do we want to add a client metadata parameter to
-   signal this, as well as an AS/RS metadata parmaeter to signal support
-   for each type? ]]
+   [[ Editor's note: do we want to add an AS/RS metadata parameter to
+   signal support for each type? ]]
 
    [[ Editor's note: Are there any other patterns of key introduction we
    should cover?  I put PAR in the appendix as a note. ]]
@@ -162,10 +171,10 @@ Table of Contents
    A client pre-registering its keys for [HTTPSIG] binding MUST include
    the key in its registered jwks value or make it available from its
    jwks_uri endpoint.  The JWK MUST have a kid field and MUST indicate a
-   signing algorithm in its alg field.  The key ID for the public used
-   for HTTP Message Signature bound access tokens MUST be identified
-   using the httpsig_bound_access_token_kid field in the client's
-   metadata.
+   signing algorithm in its alg field.  The key ID for the public key
+   used for HTTP Message Signature bound access tokens MUST be
+   identified using the httpsig_bound_access_token_kid field in the
+   client's metadata.
 
    [[ Editor's note: do we want to have a client field for the signing
    alg or just leave that to the key all the time?  I prefer to keep it
@@ -181,6 +190,34 @@ Table of Contents
    Note that pre-registration can occur statically or dynamically (such
    as by using [DYNREG]), as long as the key is associated with the
    client's client_id before the token request is made.
+
+2.1.1.  Example Client Registration
+
+   A client can publish the key binding parameters as part of a
+   [I-D.ietf-oauth-client-id-metadata-document] alongside its jwks or
+   jwks_uri values.  For example, a client with the client_id value
+   https://client.example.com/client-metadata.json would publish the
+   following document at that URL, indicating that it uses a pre-
+   registered key:
+
+   {
+       "client_id": "https://client.example.com/client-metadata.json",
+       "client_name": "Example Client",
+       "jwks": {
+           "keys": [
+               {
+                   "kty": "OKP",
+                   "use": "sig",
+                   "crv": "Ed25519",
+                   "kid": "j-0Ny45NWmqGq6GQ",
+                   "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
+                   "alg": "EdDSA"
+               }
+           ]
+       },
+       "httpsig_bound_access_token_kid": "j-0Ny45NWmqGq6GQ",
+       "httpsig_key_binding_method": "preregistered"
+   }
 
 2.2.  Token Request Key Introduction
 
@@ -203,10 +240,9 @@ Table of Contents
 
 2.3.  Token Request
 
-   The presence of an HTTP Message Signature with the tag "httpsig-
-   oauth-token-request" indicates that the client is requesting a bound
-   token.  The client MUST include a message signature of the indicated
-   key.
+   The presence of an HTTP Message Signature with the tag httpsig-oauth-
+   token-request indicates that the client is requesting a bound token.
+   The client MUST include a message signature of the indicated key.
 
    Additionally, the client MUST calculate and include the digest of the
    request body and include it as the Content-Digest header defined in
@@ -386,7 +422,7 @@ Table of Contents
    Authorization: httpsig 2340897.34j123-134uh2345n
    Authorization: HTTPSIG 2340897.34j123-134uh2345n
    Authorization: Httpsig 2340897.34j123-134uh2345n
-   Authorization: hTpTsIg 2340897.34j123-134uh2345n
+   Authorization: hTtPsIg 2340897.34j123-134uh2345n
 
    When presenting an HTTP Message Signature bound access token to an
    RS, the client MUST include a signature compliant with [HTTPSIG].
@@ -651,6 +687,13 @@ Table of Contents
 
 11.2.  Informative References
 
+   [I-D.ietf-oauth-client-id-metadata-document]
+              Parecki, A. and E. Smith, "OAuth Client ID Metadata
+              Document", Work in Progress, Internet-Draft, draft-ietf-
+              oauth-client-id-metadata-document-02, 6 July 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-oauth-
+              client-id-metadata-document-02>.
+
    [I-D.ietf-oauth-signed-http-request]
               Richer, J., Bradley, J., and H. Tschofenig, "A Method for
               Signing HTTP Requests for OAuth", Work in Progress,
@@ -675,7 +718,9 @@ Appendix A.  Document History
 
    *  -02
 
-      -  Added co-author
+      -  Editorial fixes
+
+      -  Added example of client registration metadata parameter in CIMD
 
    *  -01
 
@@ -745,8 +790,18 @@ Appendix C.  Test Vectors
    [[ Editor's note: we really should have end-to-end test vectors with
    keys and stuff all in here, not just inline. ]]
 
-Author's Address
+Authors' Addresses
 
    Justin Richer (editor)
    MongoDB
    Email: ietf@justin.richer.org
+
+
+   Aaron Parecki
+   Okta
+   Email: aaron@parecki.com
+
+
+   Paul Bastian
+   Bundesdruckerei
+   Email: paul.bastian@posteo.de
