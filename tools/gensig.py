@@ -478,15 +478,54 @@ def parse_http_request(text: str) -> HTTPRequest:
 # Inspectable signer — captures signature base before returning
 # ---------------------------------------------------------------------------
 
+def runtime_key_params(public_pem: bytes, algorithm: type) -> "collections.OrderedDict":
+    """Map a public key into HTTP Message Signature parameters per {#embed-keys}.
+
+    Returns an OrderedDict of parameter name -> bytes (serialized as a Byte
+    Sequence by http_sfv). Covers EC (pub_key_x/pub_key_y), Ed25519
+    (pub_key_a), and RSA (pub_key_n/pub_key_e).
+    """
+    from cryptography.hazmat.primitives.asymmetric import ec, ed25519, rsa
+
+    pub = load_pem_public_key(public_pem)
+    params: "collections.OrderedDict[str, bytes]" = collections.OrderedDict()
+
+    if algorithm in (sig_algorithms.ECDSA_P256_SHA256,) or isinstance(pub, ec.EllipticCurvePublicKey):
+        numbers = pub.public_numbers()
+        size = (pub.curve.key_size + 7) // 8
+        params["pub_key_x"] = numbers.x.to_bytes(size, "big")
+        params["pub_key_y"] = numbers.y.to_bytes(size, "big")
+    elif isinstance(pub, ed25519.Ed25519PublicKey):
+        params["pub_key_a"] = pub.public_bytes(Encoding.Raw, PublicFormat.Raw)
+    elif isinstance(pub, rsa.RSAPublicKey):
+        numbers = pub.public_numbers()
+        n_len = (numbers.n.bit_length() + 7) // 8
+        e_len = (numbers.e.bit_length() + 7) // 8
+        params["pub_key_n"] = numbers.n.to_bytes(n_len, "big")
+        params["pub_key_e"] = numbers.e.to_bytes(e_len, "big")
+    else:
+        raise ValueError(f"Cannot embed public key of type {type(pub).__name__}")
+
+    return params
+
+
 class InspectableSigner(HTTPMessageSigner):
-    """HTTPMessageSigner that stores the last signature base for inspection."""
+    """HTTPMessageSigner that stores the last signature base for inspection.
+
+    If ``extra_params`` is set, those parameters are merged into every
+    signature's parameters so they appear in Signature-Input and are covered
+    by the signature base (used for runtime public-key embedding).
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.last_sig_base: Optional[str] = None
         self.last_sig_elements: Optional[dict] = None
+        self.extra_params: Optional[dict] = None
 
     def _build_signature_base(self, message, *, covered_component_ids, signature_params):
+        if self.extra_params:
+            signature_params.update(self.extra_params)
         result = super()._build_signature_base(
             message,
             covered_component_ids=covered_component_ids,
@@ -501,9 +540,33 @@ class InspectableSigner(HTTPMessageSigner):
 # Output formatting
 # ---------------------------------------------------------------------------
 
+RFC8792_NOTE = "NOTE: '\\' line wrapping per RFC 8792"
+
+
+def content_digest_sha256(body: bytes) -> str:
+    """Return the Content-Digest header value for a SHA-256 body digest."""
+    import hashlib
+    digest = hashlib.sha256(body).digest()
+    cd = http_sfv.Dictionary()
+    cd["sha-256"] = digest
+    return str(cd)
+
+
 def _artwork_block(content: str, label: str = "") -> str:
     fence = f"~~~ {label}".rstrip()
     return f"{fence}\n{content}\n~~~"
+
+
+def _with_wrap_note(wrapped: str) -> str:
+    """Prepend the RFC 8792 note if the content contains line wrapping.
+
+    Rendered outputs that use the single-backslash fold must carry the note
+    (and a following blank line) so the wrapping is self-describing.
+    """
+    if any(line.endswith("\\") and not line.endswith("\\\\")
+           for line in wrapped.splitlines()):
+        return f"{RFC8792_NOTE}\n\n{wrapped}"
+    return wrapped
 
 
 def format_output(
@@ -573,6 +636,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
                    help="Application-specific tag for the signature")
     p.add_argument("--include-alg-param", action="store_true",
                    help="Include the 'alg' parameter in Signature-Input")
+    p.add_argument("--runtime-key", action="store_true",
+                   help="Embed the public key as signature parameters per the "
+                        "draft's Embedding a Public Key Value section "
+                        "(pub_key_*). Implies --include-alg-param.")
     p.add_argument("--output", "-o", type=Path, default=None,
                    help="Output file (default: stdout)")
     p.add_argument("--width", "-w", type=int, default=69,
@@ -583,6 +650,19 @@ def build_arg_parser() -> argparse.ArgumentParser:
                    help="Include public key material in the output")
     p.add_argument("--show-original", action="store_true",
                    help="Include the original (unsigned) request in the output")
+    # Direct output targets: each writes only that artifact's content, with no
+    # section label or fence, prefixed with the RFC 8792 note when wrapped.
+    # Suitable for kramdown-rfc {::include ...} files.
+    p.add_argument("--content-digest", action="store_true",
+                   help="Compute a SHA-256 Content-Digest of the request body "
+                        "and add it to the message before signing")
+    p.add_argument("--out-signed", type=Path, default=None,
+                   help="Write the signed HTTP message to this file")
+    p.add_argument("--out-sig-base", type=Path, default=None,
+                   help="Write the signature base to this file")
+    p.add_argument("--out-digest", type=Path, default=None,
+                   help="Write the Content-Digest header line to this file "
+                        "(implies --content-digest)")
     return p
 
 
@@ -597,11 +677,26 @@ def main() -> None:
     request = parse_http_request(request_text)
     original = parse_http_request(request_text)  # keep a clean copy
 
+    # Content-Digest: compute over the body and add before signing so it can
+    # be a covered component. --out-digest implies computing the digest.
+    digest_value: Optional[str] = None
+    if args.content_digest or args.out_digest is not None:
+        digest_value = content_digest_sha256(request.body or b"")
+        request.headers["Content-Digest"] = digest_value
+
+    # --runtime-key forces the alg parameter to be present
+    include_alg = args.include_alg_param or args.runtime_key
+
     # Build signer
     signer = InspectableSigner(
         signature_algorithm=key.algorithm,
         key_resolver=key.as_resolver(),
     )
+
+    if args.runtime_key:
+        if key.public_pem is None:
+            raise SystemExit("--runtime-key requires a key with public material")
+        signer.extra_params = runtime_key_params(key.public_pem, key.algorithm)
 
     created_dt = (
         datetime.datetime.fromtimestamp(args.created)
@@ -616,11 +711,36 @@ def main() -> None:
         nonce=args.nonce,
         tag=args.tag,
         label=args.label,
-        include_alg=args.include_alg_param,
+        include_alg=include_alg,
         covered_component_ids=args.covered,
     )
 
     sig_base = signer.last_sig_base or ""
+
+    # Direct artifact outputs: clean content, NOTE-prefixed when wrapped.
+    if args.out_signed is not None:
+        content = _with_wrap_note(wrap_http_block(request.render(), args.width))
+        args.out_signed.write_text(content + "\n")
+        print(f"Wrote signed message to {args.out_signed}", file=sys.stderr)
+
+    if args.out_sig_base is not None:
+        content = _with_wrap_note(wrap_sig_base(sig_base, args.width))
+        args.out_sig_base.write_text(content + "\n")
+        print(f"Wrote signature base to {args.out_sig_base}", file=sys.stderr)
+
+    if args.out_digest is not None:
+        content = _with_wrap_note(
+            wrap_line("Content-Digest: " + (digest_value or ""),
+                      args.width, is_binary=True))
+        args.out_digest.write_text(content + "\n")
+        print(f"Wrote content-digest to {args.out_digest}", file=sys.stderr)
+
+    # If any direct output target was given, skip the combined stdout report
+    # unless an explicit --output was also requested.
+    any_target = any(t is not None for t in
+                     (args.out_signed, args.out_sig_base, args.out_digest))
+    if any_target and args.output is None:
+        return
 
     output = format_output(
         request_original=original,

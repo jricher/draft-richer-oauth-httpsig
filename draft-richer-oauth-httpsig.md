@@ -42,6 +42,7 @@ normative:
     DYNREG: RFC7591
     JSON: RFC8259
     HTTPAUTH: RFC7235
+    RFC8032:
 
 informative:
     I-D.ietf-oauth-signed-http-request:
@@ -103,6 +104,8 @@ A client pre-registering its keys for {{HTTPSIG}} binding MUST include the key i
 
 A pre-registered key MAY be a shared secret (such as for use in an HMAC signature), but public key cryptography is RECOMMENDED.
 
+If the key is pre-registered, the signature algorithm MUST be derived from the indicated key and the `alg` signature parameter MUST NOT be used.
+
 Note that pre-registration can occur statically or dynamically (such as by using {{DYNREG}}), as long as the key is associated with the client's `client_id` before the token request is made.
 
 ### Example Client Registration
@@ -132,37 +135,15 @@ A client can publish the key binding parameters as part of a {{I-D.ietf-oauth-cl
 
 ## Token Request Key Introduction {#runtime}
 
-Instead of pre-registering a key, a client can introduce its key during the token request in the same fashion as {{DPOP}}.
+Instead of pre-registering a key, a client can introduce its key during the token request in a similar fashion as {{DPOP}}.
 
-The client MUST present its public key in the Signature-Key header field. The field is an HTTP Structured Field consisting of a Binary value containing the bytes of the {{JSON}} serialized {{JWK}} form of the key material.
+To use this mode, the client MUST:
 
-The JWK MUST have a `kid` field. The key MUST be a public key (and neither a private key nor a shared secret key). The JWK MUST have an `alg` value that indicates a signature algorithm.
+* Include the `alg` signature parameter with a valid value from the HTTP Message Signatures Algorithms Registry indicating an asymmetric signature algorithm.
+* Include its public key in the key type specific parameters as described in {{embed-keys}}.
+* Include the `keyid` signature parameter uniquely identifying the key.
 
-For example, the following JWK public key:
-
-~~~ json
-{
-    "kty": "OKP",
-    "use": "sig",
-    "crv": "Ed25519",
-    "kid": "j-0Ny45NWmqGq6GQ",
-    "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
-    "alg": "EdDSA"
-}
-~~~
-
-Can be encoded to the following Signature-Key field value (this example uses a compact JSON serialization that removes whitespace):
-
-~~~
-NOTE: '\' line wrapping per RFC 8792
-
-Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
-  iwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2Vm\
-  USIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTN\
-  zIiwiYWxnIjoiRWREU0EifQ==:
-~~~
-
-\[\[ Editor's note: this is a really awkward way to encode a JWK. We could try to break apart the JSON but there's not a 1:1 map to HTTP Structured Fields we can rely on. We could just put the minified JSON into a string but the double quotes would need to be escaped. This is the least bad version I could come up with right now. \]\]
+The included key MUST be appropriate for the indicated algorithm.
 
 ## Token Request {#request}
 
@@ -173,16 +154,13 @@ Additionally, the client MUST calculate and include the digest of the request bo
 For example, a form-encoded request body consisting of:
 
 ~~~
-NOTE: '\' line wrapping per RFC 8792
-
-grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA\
-&redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+{::include tools/examples/token-request-body.form}
 ~~~
 
 Would create the following Content-Digest header:
 
 ~~~
-Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
+{::include tools/examples/content-digest.hdr}
 ~~~
 
 A client using this method MUST sign the token endpoint request using {{HTTPSIG}} with the appropriate key. The covered components MUST include:
@@ -191,10 +169,6 @@ A client using this method MUST sign the token endpoint request using {{HTTPSIG}
 - `@target-uri` the full request URI of the request (note that this includes the scheme, authority, path, and query)
 - `content-digest` the digest of the request body
 
-If a signature key is presented at runtime as described in {{runtime}}, the covered components MUST include:
-
-- `signature-key` the encoded public key used to sign this request
-
 The covered components MUST include the client's authentication, if available. If using HTTP Basic, this means including the `authorization` field.
 
 The signature MUST include the following parameters:
@@ -202,32 +176,43 @@ The signature MUST include the following parameters:
 - `created` a timestamp for signature creation; this MUST be within a small number of seconds of issuance (e.g. 30 seconds to account for clock skew)
 - `nonce` a random unique value that the AS can use to prevent signature replay within the small validity time window
 - `tag` a string indicating that this is being used for requesting a bound token, MUST be the value "httpsig-oauth-token-request"
-- `keyid` the `kid` value for the key to be used for binding the token; if client uses pre-registered keys as in {{preregister}}, the value MUST match the `httpsig_bound_access_token_kid` value; if the key is presented at runtime as in {{runtime}}, the value MUST match the `kid` of the JWK in the Signature-Key field
+- `keyid` the identifier for the key to be used for binding the token (matching `kid` in the token); if client uses pre-registered keys as in {{preregister}}, the value MUST match the `httpsig_bound_access_token_kid` value
 
-The signature algorithm MUST be derived from the indicated key. The `alg` signature parameter MUST NOT be used.
+Additionally, if the key is presented at runtime, the parameters and public key MUST be included as signature parameters as defined in {{runtime}}.
 
 An example request to the token endpoint (using a runtime-provided key here) can look like the following:
 
 ~~~ http-message
-POST /token HTTP/1.1
-Host: server.example.com
-Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
-Content-Type: application/x-www-form-urlencoded
-Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
-  iwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2Vm\
-  USIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTN\
-  zIiwiYWxnIjoiRWREU0EifQ==:
-Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
-Signature-Input: sig1=("@method" "@target-uri" "content-digest" \
-  "signature-key" "authorization");created=1618884473\
-  ;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCgefQ"\
-  ;nonce="b3k2pp5k7z-50gnX1b06";tag="httpsig-oauth-token-request"
-Signature: sig1=:AWyxebrJ6u8CMi0B3TyX9G1G3XT45UW5zIn8mhsyXdmjTUtGS+1M\
-  XiydKv5z0GLCrMhVSFe691jF98DRNNSPAg==:
-
-grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&\
-redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+{::include tools/examples/token-request-signed.http}
 ~~~
+
+# Embedding a Public Key Value {#embed-keys}
+
+When encoding a public key value in a runtime request as in {{runtime}}, the client includes the public key material appropriate to the signature algorithm being used.
+
+## Elliptic Curve
+
+If the `alg` value is `ecdsa-p256-sha256` or `ecdsa-p384-sha384`, the public key is encoded in two additional signature parameters and values attached to the signature input:
+
+- `pub_key_x`: the big-endian encoded, zero-padded bytes of the key's X value, encoded as a Byte Sequence
+- `pub_key_y`: the big-endian encoded, zero-padded bytes of the key's Y value, encoded as a Byte Sequence
+
+For `ecdsa-p256-sha256`, the key values are padded to exactly 32 bytes each. For `ecdsa-p384-sha384`, the key values are padded to exactly 48 bytes each.
+
+## Edwards Elliptic Curve
+
+If the `alg` value is `ed25519`, the public key is encoded in one additional signature parameter and value attached to the signature input:
+
+- `pub_key_a`: the little-endian encoded compressed Edwards point defined in {{RFC8032}}, encoded as a Byte Sequence
+
+The key value is exactly 32 bytes in length.
+
+## RSA
+
+If the `alg` value is `rsa-pss-sha512` or `rsa-v1_5-sha256`, the public key is encoded in two additional signature parameters and values attached to the signature input:
+
+- `pub_key_n`: the big-endian encoded unsigned modulus of the key (no sign byte and no leading 0x00 octet), encoded as a Byte Sequence
+- `pub_key_e`: the big-endian encoded exponent of the key, encoded as a Byte Sequence
 
 # Issuing an HTTP Message Signature Bound Access Token {#issuing}
 
@@ -297,36 +282,28 @@ The signature MUST include the following parameters:
 - `created` a timestamp for signature creation; this MUST be within a small number of seconds of issuance (e.g. 30 seconds to account for clock skew)
 - `nonce` a random unique value that the AS can use to prevent signature replay within the small validity time window
 - `tag` a string indicating that this is being used for requesting a bound token, MUST be the value "httpsig-oauth"
-- `keyid` the `kid` value for the key used to sign the request
+- `keyid` the identifier for the key used to sign the request
 
 The client MUST NOT include an `alg` signature parameter.
 
 For example, the following signed request includes a signature with the needed parameters:
 
 ~~~ http-message
-NOTE: '\' line wrapping per RFC 8792
-
-GET /foo HTTP/1.1
-Host: example.com
-Date: Mon, 20 Apr 2026 02:07:55 GMT
-Authorization: HTTPSig 2340897.34j123-134uh2345n
-Signature-Input: sig1=("@method" "@target-uri" "authorization")\
-  ;created=1776650875;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCg\
-  efQ";nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
-Signature: sig1=:kFJC2WoBbrQc8tsKiowIb8oeIA533qmKvzdKf8kndJ7kaLxGmm2v\
-  9+IPB8kLE0WUea8KryJGSV7ji1apLkeKBg==:
+{::include tools/examples/present-request-signed.http}
 ~~~
 
-# Validating an HTTP Message Signature Bound Access Token Request {#validating}
+# Validating an HTTP Message Signature Bound Resource Request {#validating}
 
 In order for a request protected by an HTTP Message Signature bound access token to be considered valid, the RS MUST perform the following checks:
 
-- The presented signature validates using the key associated with the token
-- The signature validates using the algorithm associated with the key
+- The presented signature validates using the key bound to the token
+- The signature validates using the HTTP_VERIFY algorithm associated with the key
+- The `keyid` value matches the identifier for the key bound to the token
 - The `created` value is not too far in the past (e.g. 30 seconds to account for clock skew and network delays)
 - The `nonce` value has not been previously used within the time validity window of this request
 - The `tag` value is "httpsig-oauth"
-- The covered components and parameters include all items enumerated in {{presenting}}
+- The covered components and parameters include all items enumerated in {{presenting}}, including the Authorization header field
+- The `alg` parameter is not present
 
 If the request includes an entity body (such as a POST, PUT, or QUERY) and a digest as per {{DIGEST}}, the RS MUST validate the digest.
 
@@ -335,52 +312,18 @@ If the request includes multiple signatures tagged "httpsig-oauth", all signatur
 For example, to validate the request:
 
 ~~~ http-message
-NOTE: '\' line wrapping per RFC 8792
-
-GET /foo HTTP/1.1
-Host: example.com
-Date: Mon, 20 Apr 2026 02:07:55 GMT
-Authorization: HTTPSig 2340897.34j123-134uh2345n
-Signature-Input: sig1=("@method" "@target-uri" "authorization")\
-  ;created=1776650875;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCg\
-  efQ";nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
-Signature: sig1=:kFJC2WoBbrQc8tsKiowIb8oeIA533qmKvzdKf8kndJ7kaLxGmm2v\
-  9+IPB8kLE0WUea8KryJGSV7ji1apLkeKBg==:
+{::include tools/examples/rs-request-signed.http}
 ~~~
 
-The RS determines the key bound to the token and validates the `kid` value against that key. The RS determines the algorithm from the key and performs signature validation per {{HTTPSIG}} on the
+The RS determines the key bound to the token (in this example, assume the RS introspects the token to get the key material) and validates the `kid` value against that the `keyid` in the signature input. The RS determines the algorithm from the key material.
 
-In this example, the client has a key with the `kid` value of `test-key-rsa-pss` which uses the JWA `alg` value of `PS512`. The signature input string is:
+In this example, the client has a key with the `kid` value of `test-key-ecdsa-p256`. The signature input string is:
 
 ~~~
-"@request-target": get /foo
-"host": example.org
-"authorization": HTTPSig 2340897.34j123-134uh2345n
-"@signature-params": ("@request-target" "host" "authorization")\
-  ;created=1618884475;keyid="test-key-rsa-pss"
+{::include tools/examples/rs-sig-base.sigbase}
 ~~~
 
-This results in the following signed HTTP message, including the access token.
-
-~~~ http-message
-NOTE: '\' line wrapping per RFC 8792
-
-GET /foo HTTP/1.1
-Host: example.com
-Date: Tue, 20 Apr 2021 02:07:55 GMT
-Authorization: HTTPSig 2340897.34j123-134uh2345n
-Signature-Input: sig1=("@request-target" "host" "authorization")\
-  ;created=1618884475;keyid="test-key-rsa-pss"
-Signature: sig1=:o+Fy/a6IIWhHwnMFhsHqfXEpheWGBMOU3pheT50zA8rL5F8Nur\
-  xBKAPylMGBWYCKH5Bd+TB0Co6vqANlXyOCM9Zr5c/UmR5WGex5/OgJJmfN7gOVOH5\
-  pB2Zxa233xsohfwo9liBlctukN5//E3F04rKjIkoeTFJiS+hMcOzn29esgFSEl4Jy\
-  oO5Q8snMIsC56ZAPYwU7rJis1Wvl6Y9/9tpW6gIn/SHwArhPQSAb0zZy6mCiw654n\
-  CaKw5NYJ9S0DZlnV4T7nJtdZsHOkddF6kH4WVka3ev0xONI5kYkEdR1Gw0VAE9thi\
-  p+3/aFoUVTJ/1J6JfehZpXqehwv3KNoQ==:
-~~~
-
-An RS receiving such a signed message and a bound access token MUST verify the HTTP Message Signature as described in {{HTTPSIG}}. The RS MUST verify that all required portions of the HTTP request are covered by the signature by examining the contents of the signature parameters.
-
+The RS then calculates the signature validation against the signature base using the key using the algorithm appropriate HTTP_VERIFY function, per {{HTTPSIG}}.
 
 # Acknowledgements {#Acknowledgements}
 
@@ -407,6 +350,11 @@ An RS receiving such a signed message and a bound access token MUST verify the H
 --- back
 
 # Document History {#history}
+
+
+- -03
+    - Added co-authors
+    - Changed inline key presentation from header to signature parameter
 
 - -02
     - Editorial fixes
@@ -445,3 +393,8 @@ Keys for this purpose could be introduced during a {{PAR}} request phase, as par
 ## Accept-Signature Support
 
 The `Accept-Signature` mechanism in {{HTTPSIG}} allows for runtime discovery of not only the applicability of signatures but also the expected coverage, for particular uses.
+
+# Test Vectors
+
+\[\[ Editor's note: we really should have end-to-end test vectors with keys and stuff all in here, not just inline. \]\]
+
