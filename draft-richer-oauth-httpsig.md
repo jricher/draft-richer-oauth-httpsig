@@ -108,7 +108,7 @@ To use this mode, the client MUST:
 
 * Include the `alg` signature parameter with a valid value from the HTTP Message Signatures Algorithms Registry indicating an asymmetric signature algorithm.
 * Present its public key in the as described in {{embed-keys}}.
-* Include the `kid` signature parameter uniquely identifying the key.
+* Include the `keyid` signature parameter uniquely identifying the key.
 
 The included key MUST be appropriate for the indicated algorithm.
 
