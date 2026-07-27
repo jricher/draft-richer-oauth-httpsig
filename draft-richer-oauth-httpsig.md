@@ -107,7 +107,7 @@ Instead of pre-registering a key, a client can introduce its key during the toke
 To use this mode, the client MUST:
 
 * Include the `alg` signature parameter with a valid value from the HTTP Message Signatures Algorithms Registry indicating an asymmetric signature algorithm.
-* Present its public key in the as described in {{embed-keys}}.
+* Include its public key in the key type specific parameters as described in {{embed-keys}}.
 * Include the `keyid` signature parameter uniquely identifying the key.
 
 The included key MUST be appropriate for the indicated algorithm.
@@ -143,7 +143,7 @@ The signature MUST include the following parameters:
 - `created` a timestamp for signature creation; this MUST be within a small number of seconds of issuance (e.g. 30 seconds to account for clock skew)
 - `nonce` a random unique value that the AS can use to prevent signature replay within the small validity time window
 - `tag` a string indicating that this is being used for requesting a bound token, MUST be the value "httpsig-oauth-token-request"
-- `keyid` the `kid` value for the key to be used for binding the token; if client uses pre-registered keys as in {{preregister}}, the value MUST match the `httpsig_bound_access_token_kid` value
+- `keyid` the identifier for the key to be used for binding the token (matching `kid` in the token); if client uses pre-registered keys as in {{preregister}}, the value MUST match the `httpsig_bound_access_token_kid` value
 
 Additionally, if the key is presented at runtime, the parameters and public key MUST be included as signature parameters as defined in {{runtime}}.
 
@@ -282,7 +282,7 @@ For example, to validate the request:
 {::include tools/examples/rs-request-signed.http}
 ~~~
 
-The RS determines the key bound to the token (in this example, assume the RS introspects the token to get the key material) and validates the `kid` value against that key's identifier. The RS determines the algorithm from the key material.
+The RS determines the key bound to the token (in this example, assume the RS introspects the token to get the key material) and validates the `kid` value against that the `keyid` in the signature input. The RS determines the algorithm from the key material.
 
 In this example, the client has a key with the `kid` value of `test-key-ecdsa-p256`. The signature input string is:
 
