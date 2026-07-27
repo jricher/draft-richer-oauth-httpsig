@@ -1328,7 +1328,7 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
             <p id="section-2.2-3.1.1">Include the <code>alg</code> signature parameter with a valid value from the HTTP Message Signatures Algorithms Registry indicating an asymmetric signature algorithm.<a href="#section-2.2-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-2.2-3.2">
-            <p id="section-2.2-3.2.1">Present its public key in the as described in <a href="#embed-keys" class="auto internal xref">Section 3</a>.<a href="#section-2.2-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-2.2-3.2.1">Include its public key in the key type specific parameters as described in <a href="#embed-keys" class="auto internal xref">Section 3</a>.<a href="#section-2.2-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-2.2-3.3">
             <p id="section-2.2-3.3.1">Include the <code>keyid</code> signature parameter uniquely identifying the key.<a href="#section-2.2-3.3.1" class="pilcrow">¶</a></p>
@@ -1384,7 +1384,7 @@ Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
             <p id="section-2.3-11.3.1"><code>tag</code> a string indicating that this is being used for requesting a bound token, MUST be the value "httpsig-oauth-token-request"<a href="#section-2.3-11.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-2.3-11.4">
-            <p id="section-2.3-11.4.1"><code>keyid</code> the <code>kid</code> value for the key to be used for binding the token; if client uses pre-registered keys as in <a href="#preregister" class="auto internal xref">Section 2.1</a>, the value MUST match the <code>httpsig_bound_access_token_kid</code> value<a href="#section-2.3-11.4.1" class="pilcrow">¶</a></p>
+            <p id="section-2.3-11.4.1"><code>keyid</code> the identifier for the key to be used for binding the token (matching <code>kid</code> in the token); if client uses pre-registered keys as in <a href="#preregister" class="auto internal xref">Section 2.1</a>, the value MUST match the <code>httpsig_bound_access_token_kid</code> value<a href="#section-2.3-11.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-2.3-12">Additionally, if the key is presented at runtime, the parameters and public key MUST be included as signature parameters as defined in <a href="#runtime" class="auto internal xref">Section 2.2</a>.<a href="#section-2.3-12" class="pilcrow">¶</a></p>
@@ -1641,7 +1641,7 @@ Signature: sig1=:ggBLokBFCW7NcE4z1P5zV1wn7vmnRADiMcpAVFb1q8kOQ3nlhXqQ\
   c9LPWdz1h4FGRtImK9LqNdDdpn9G4o9zRw==:
 </pre><a href="#section-6-6" class="pilcrow">¶</a>
 </div>
-<p id="section-6-7">The RS determines the key bound to the token (in this example, assume the RS introspects the token to get the key material) and validates the <code>kid</code> value against that key's identifier. The RS determines the algorithm from the key material.<a href="#section-6-7" class="pilcrow">¶</a></p>
+<p id="section-6-7">The RS determines the key bound to the token (in this example, assume the RS introspects the token to get the key material) and validates the <code>kid</code> value against that the <code>keyid</code> in the signature input. The RS determines the algorithm from the key material.<a href="#section-6-7" class="pilcrow">¶</a></p>
 <p id="section-6-8">In this example, the client has a key with the <code>kid</code> value of <code>test-key-ecdsa-p256</code>. The signature input string is:<a href="#section-6-8" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6-9">
 <pre>
