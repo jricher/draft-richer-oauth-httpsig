@@ -5,10 +5,10 @@
 OAUTH                                                     J. Richer, Ed.
 Internet-Draft                                                   MongoDB
 Intended status: Standards Track                              A. Parecki
-Expires: 27 January 2027                                            Okta
+Expires: 28 January 2027                                            Okta
                                                               P. Bastian
                                                          Bundesdruckerei
-                                                            26 July 2026
+                                                            27 July 2026
 
 
      OAuth Proof of Possession Tokens with HTTP Message Signatures
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 January 2027.
+   This Internet-Draft will expire on 28 January 2027.
 
 Copyright Notice
 
@@ -71,18 +71,22 @@ Table of Contents
        2.1.1.  Example Client Registration
      2.2.  Token Request Key Introduction
      2.3.  Token Request
-   3.  Issuing an HTTP Message Signature Bound Access Token
-     3.1.  Encoding Confirmation in a JWT
-     3.2.  Returning Confirmation in Token Introspection
-   4.  Presenting an HTTP Message Signature Bound Access Token
-   5.  Validating an HTTP Message Signature Bound Access Token Request
-   6.  Acknowledgements
-   7.  IANA Considerations
-   8.  Security Considerations
-   9.  Privacy Considerations
-   10. References
-     10.1.  Normative References
-     10.2.  Informative References
+   3.  Embedding a Public Key Value
+     3.1.  Elliptic Curve
+     3.2.  Edwards Elliptic Curve
+     3.3.  RSA
+   4.  Issuing an HTTP Message Signature Bound Access Token
+     4.1.  Encoding Confirmation in a JWT
+     4.2.  Returning Confirmation in Token Introspection
+   5.  Presenting an HTTP Message Signature Bound Access Token
+   6.  Validating an HTTP Message Signature Bound Resource Request
+   7.  Acknowledgements
+   8.  IANA Considerations
+   9.  Security Considerations
+   10. Privacy Considerations
+   11. References
+     11.1.  Normative References
+     11.2.  Informative References
    Appendix A.  Document History
    Appendix B.  Potential Other Work
      B.1.  Client Authentication
@@ -90,6 +94,7 @@ Table of Contents
      B.3.  Non-Repudiation of Requests
      B.4.  PAR Key Introduction
      B.5.  Accept-Signature Support
+   Appendix C.  Test Vectors
    Authors' Addresses
 
 1.  Introduction
@@ -150,7 +155,7 @@ Table of Contents
 
    As part of its registration, a client MUST indicate which method it
    will use, using either the httpsig_key_binding_method client
-   registration metadata parameter defined (TBD) in Section 7 when using
+   registration metadata parameter defined (TBD) in Section 8 when using
    Dynamic Client Registration ([DYNREG]) or Client ID Metadata Document
    ([I-D.ietf-oauth-client-id-metadata-document]), or via an out of band
    method.
@@ -177,6 +182,10 @@ Table of Contents
 
    A pre-registered key MAY be a shared secret (such as for use in an
    HMAC signature), but public key cryptography is RECOMMENDED.
+
+   If the key is pre-registered, the signature algorithm MUST be derived
+   from the indicated key and the alg signature parameter MUST NOT be
+   used.
 
    Note that pre-registration can occur statically or dynamically (such
    as by using [DYNREG]), as long as the key is associated with the
@@ -213,43 +222,21 @@ Table of Contents
 2.2.  Token Request Key Introduction
 
    Instead of pre-registering a key, a client can introduce its key
-   during the token request in the same fashion as [DPOP].
+   during the token request in a similar fashion as [DPOP].
 
-   The client MUST present its public key in the Signature-Key header
-   field.  The field is an HTTP Structured Field consisting of a Binary
-   value containing the bytes of the [JSON] serialized [JWK] form of the
-   key material.
+   To use this mode, the client MUST:
 
-   The JWK MUST have a kid field.  The key MUST be a public key (and
-   neither a private key nor a shared secret key).  The JWK MUST have an
-   alg value that indicates a signature algorithm.
+   *  Include the alg signature parameter with a valid value from the
+      HTTP Message Signatures Algorithms Registry indicating an
+      asymmetric signature algorithm.
 
-   For example, the following JWK public key:
+   *  Include its public key in the key type specific parameters as
+      described in Section 3.
 
-   {
-       "kty": "OKP",
-       "use": "sig",
-       "crv": "Ed25519",
-       "kid": "j-0Ny45NWmqGq6GQ",
-       "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
-       "alg": "EdDSA"
-   }
+   *  Include the keyid signature parameter uniquely identifying the
+      key.
 
-   Can be encoded to the following Signature-Key field value (this
-   example uses a compact JSON serialization that removes whitespace):
-
-  NOTE: '\' line wrapping per RFC 8792
-
-  Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
-    iwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2Vm\
-    USIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTN\
-    zIiwiYWxnIjoiRWREU0EifQ==:
-
-   [[ Editor's note: this is a really awkward way to encode a JWK.  We
-   could try to break apart the JSON but there's not a 1:1 map to HTTP
-   Structured Fields we can rely on.  We could just put the minified
-   JSON into a string but the double quotes would need to be escaped.
-   This is the least bad version I could come up with right now. ]]
+   The included key MUST be appropriate for the indicated algorithm.
 
 2.3.  Token Request
 
@@ -283,11 +270,6 @@ Table of Contents
 
    *  content-digest the digest of the request body
 
-   If a signature key is presented at runtime as described in
-   Section 2.2, the covered components MUST include:
-
-   *  signature-key the encoded public key used to sign this request
-
    The covered components MUST include the client's authentication, if
    available.  If using HTTP Basic, this means including the
    authorization field.
@@ -304,38 +286,82 @@ Table of Contents
    *  tag a string indicating that this is being used for requesting a
       bound token, MUST be the value "httpsig-oauth-token-request"
 
-   *  keyid the kid value for the key to be used for binding the token;
-      if client uses pre-registered keys as in Section 2.1, the value
-      MUST match the httpsig_bound_access_token_kid value; if the key is
-      presented at runtime as in Section 2.2, the value MUST match the
-      kid of the JWK in the Signature-Key field
+   *  keyid the identifier for the key to be used for binding the token
+      (matching kid in the token); if client uses pre-registered keys as
+      in Section 2.1, the value MUST match the
+      httpsig_bound_access_token_kid value
 
-   The signature algorithm MUST be derived from the indicated key.  The
-   alg signature parameter MUST NOT be used.
+   Additionally, if the key is presented at runtime, the parameters and
+   public key MUST be included as signature parameters as defined in
+   Section 2.2.
 
    An example request to the token endpoint (using a runtime-provided
    key here) can look like the following:
+
+   NOTE: '\' line wrapping per RFC 8792
 
    POST /token HTTP/1.1
    Host: server.example.com
    Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
    Content-Type: application/x-www-form-urlencoded
-   Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
-     iwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2Vm\
-     USIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTN\
-     zIiwiYWxnIjoiRWREU0EifQ==:
    Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
    Signature-Input: sig1=("@method" "@target-uri" "content-digest" \
-     "signature-key" "authorization");created=1618884473\
-     ;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCgefQ"\
-     ;nonce="b3k2pp5k7z-50gnX1b06";tag="httpsig-oauth-token-request"
-   Signature: sig1=:AWyxebrJ6u8CMi0B3TyX9G1G3XT45UW5zIn8mhsyXdmjTUtGS+1M\
-     XiydKv5z0GLCrMhVSFe691jF98DRNNSPAg==:
+     "authorization");created=1618884473;keyid="j-0Ny45NWmqGq6G4UxLjGjNu\
+     loktugtOW4jfGCCgefQ";alg="ed25519";nonce="b3k2pp5k7z-50gnX1b06"\
+     ;tag="httpsig-oauth-token-request";pub_key_a=:iuemcj/GhRHmY/yCsMlDN\
+     p3BQgPZDdG00VRsg/BgU3s=:
+   Signature: sig1=:ikilCUkL+BjDRXdC7m4eNgU/4dQtijp4BTgehqYRxJX+sPr394dx\
+     qGAPzV99eUVDhN1cgAk2VFXvN2pNfpFTBA==:
 
-   grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&\
-   redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+   grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&redirect_ur\
+     i=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
 
-3.  Issuing an HTTP Message Signature Bound Access Token
+3.  Embedding a Public Key Value
+
+   When encoding a public key value in a runtime request as in
+   Section 2.2, the client includes the public key material appropriate
+   to the signature algorithm being used.
+
+3.1.  Elliptic Curve
+
+   If the alg value is ecdsa-p256-sha256 or ecdsa-p384-sha384, the
+   public key is encoded in two additional signature parameters and
+   values attached to the signature input:
+
+   *  pub_key_x: the big-endian encoded, zero-padded bytes of the key's
+      X value, encoded as a Byte Sequence
+
+   *  pub_key_y: the big-endian encoded, zero-padded bytes of the key's
+      Y value, encoded as a Byte Sequence
+
+   For ecdsa-p256-sha256, the key values are padded to exactly 32 bytes
+   each.  For ecdsa-p384-sha384, the key values are padded to exactly 48
+   bytes each.
+
+3.2.  Edwards Elliptic Curve
+
+   If the alg value is ed25519, the public key is encoded in one
+   additional signature parameter and value attached to the signature
+   input:
+
+   *  pub_key_a: the little-endian encoded compressed Edwards point
+      defined in [RFC8032], encoded as a Byte Sequence
+
+   The key value is exactly 32 bytes in length.
+
+3.3.  RSA
+
+   If the alg value is rsa-pss-sha512 or rsa-v1_5-sha256, the public key
+   is encoded in two additional signature parameters and values attached
+   to the signature input:
+
+   *  pub_key_n: the big-endian encoded unsigned modulus of the key (no
+      sign byte and no leading 0x00 octet), encoded as a Byte Sequence
+
+   *  pub_key_e: the big-endian encoded exponent of the key, encoded as
+      a Byte Sequence
+
+4.  Issuing an HTTP Message Signature Bound Access Token
 
    The AS MUST validate the signature of the token request sent in
    Section 2.3 against the identified key and the algorithm associated
@@ -357,7 +383,7 @@ Table of Contents
    When issuing an access token bound to a key using HTTP Message
    Signatures, the AS associates the granted token with the key used in
    the requesting signature.  All presentations of this token at any RS
-   MUST contain an HTTP message signature as described in Section 4.
+   MUST contain an HTTP message signature as described in Section 5.
 
    An HTTP Message Signature bound access token MUST have a token_type
    value of httpsig.
@@ -378,11 +404,11 @@ Table of Contents
    to allow the RS to verify the signature w/o the client's registration
    information.  Leaving the following sections as placeholders. ]]
 
-3.1.  Encoding Confirmation in a JWT
+4.1.  Encoding Confirmation in a JWT
 
-3.2.  Returning Confirmation in Token Introspection
+4.2.  Returning Confirmation in Token Introspection
 
-4.  Presenting an HTTP Message Signature Bound Access Token
+5.  Presenting an HTTP Message Signature Bound Access Token
 
    HTTP Message Signature bound access token MUST be presented in an
    HTTP Authorization field using the HTTPSig authorization scheme.
@@ -434,7 +460,7 @@ Table of Contents
    *  tag a string indicating that this is being used for requesting a
       bound token, MUST be the value "httpsig-oauth"
 
-   *  keyid the kid value for the key used to sign the request
+   *  keyid the identifier for the key used to sign the request
 
    The client MUST NOT include an alg signature parameter.
 
@@ -453,17 +479,19 @@ Table of Contents
    Signature: sig1=:kFJC2WoBbrQc8tsKiowIb8oeIA533qmKvzdKf8kndJ7kaLxGmm2v\
      9+IPB8kLE0WUea8KryJGSV7ji1apLkeKBg==:
 
-5.  Validating an HTTP Message Signature Bound Access Token Request
+6.  Validating an HTTP Message Signature Bound Resource Request
 
    In order for a request protected by an HTTP Message Signature bound
    access token to be considered valid, the RS MUST perform the
    following checks:
 
-   *  The presented signature validates using the key associated with
-      the token
+   *  The presented signature validates using the key bound to the token
 
-   *  The signature validates using the algorithm associated with the
-      key
+   *  The signature validates using the HTTP_VERIFY algorithm associated
+      with the key
+
+   *  The keyid value matches the identifier for the key bound to the
+      token
 
    *  The created value is not too far in the past (e.g. 30 seconds to
       account for clock skew and network delays)
@@ -474,7 +502,9 @@ Table of Contents
    *  The tag value is "httpsig-oauth"
 
    *  The covered components and parameters include all items enumerated
-      in Section 4
+      in Section 5, including the Authorization header field
+
+   *  The alg parameter is not present
 
    If the request includes an entity body (such as a POST, PUT, or
    QUERY) and a digest as per [DIGEST], the RS MUST validate the digest.
@@ -491,58 +521,41 @@ Table of Contents
    Date: Mon, 20 Apr 2026 02:07:55 GMT
    Authorization: HTTPSig 2340897.34j123-134uh2345n
    Signature-Input: sig1=("@method" "@target-uri" "authorization")\
-     ;created=1776650875;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCg\
-     efQ";nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
-   Signature: sig1=:kFJC2WoBbrQc8tsKiowIb8oeIA533qmKvzdKf8kndJ7kaLxGmm2v\
-     9+IPB8kLE0WUea8KryJGSV7ji1apLkeKBg==:
+     ;created=1776650875;keyid="test-key-ecdsa-p256"\
+     ;nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
+   Signature: sig1=:ggBLokBFCW7NcE4z1P5zV1wn7vmnRADiMcpAVFb1q8kOQ3nlhXqQ\
+     c9LPWdz1h4FGRtImK9LqNdDdpn9G4o9zRw==:
 
-   The RS determines the key bound to the token and validates the kid
-   value against that key.  The RS determines the algorithm from the key
-   and performs signature validation per [HTTPSIG] on the
+   The RS determines the key bound to the token (in this example, assume
+   the RS introspects the token to get the key material) and validates
+   the kid value against that the keyid in the signature input.  The RS
+   determines the algorithm from the key material.
 
    In this example, the client has a key with the kid value of test-key-
-   rsa-pss which uses the JWA alg value of PS512.  The signature input
-   string is:
-
-   "@request-target": get /foo
-   "host": example.org
-   "authorization": HTTPSig 2340897.34j123-134uh2345n
-   "@signature-params": ("@request-target" "host" "authorization")\
-     ;created=1618884475;keyid="test-key-rsa-pss"
-
-   This results in the following signed HTTP message, including the
-   access token.
+   ecdsa-p256.  The signature input string is:
 
    NOTE: '\' line wrapping per RFC 8792
 
-   GET /foo HTTP/1.1
-   Host: example.com
-   Date: Tue, 20 Apr 2021 02:07:55 GMT
-   Authorization: HTTPSig 2340897.34j123-134uh2345n
-   Signature-Input: sig1=("@request-target" "host" "authorization")\
-     ;created=1618884475;keyid="test-key-rsa-pss"
-   Signature: sig1=:o+Fy/a6IIWhHwnMFhsHqfXEpheWGBMOU3pheT50zA8rL5F8Nur\
-     xBKAPylMGBWYCKH5Bd+TB0Co6vqANlXyOCM9Zr5c/UmR5WGex5/OgJJmfN7gOVOH5\
-     pB2Zxa233xsohfwo9liBlctukN5//E3F04rKjIkoeTFJiS+hMcOzn29esgFSEl4Jy\
-     oO5Q8snMIsC56ZAPYwU7rJis1Wvl6Y9/9tpW6gIn/SHwArhPQSAb0zZy6mCiw654n\
-     CaKw5NYJ9S0DZlnV4T7nJtdZsHOkddF6kH4WVka3ev0xONI5kYkEdR1Gw0VAE9thi\
-     p+3/aFoUVTJ/1J6JfehZpXqehwv3KNoQ==:
+   "@method": GET
+   "@target-uri": https://example.com/foo
+   "authorization": HTTPSig 2340897.34j123-134uh2345n
+   "@signature-params": ("@method" "@target-uri" "authorization")\
+     ;created=1776650875;keyid="test-key-ecdsa-p256"\
+     ;nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
 
-   An RS receiving such a signed message and a bound access token MUST
-   verify the HTTP Message Signature as described in [HTTPSIG].  The RS
-   MUST verify that all required portions of the HTTP request are
-   covered by the signature by examining the contents of the signature
-   parameters.
+   The RS then calculates the signature validation against the signature
+   base using the key using the algorithm appropriate HTTP_VERIFY
+   function, per [HTTPSIG].
 
-6.  Acknowledgements
+7.  Acknowledgements
 
-7.  IANA Considerations
+8.  IANA Considerations
 
    [[ TBD: register the token type and new parameters into their
    appropriate registries, as well as the JWT and introspection
    parameters needed for confirmation methods. ]]
 
-8.  Security Considerations
+9.  Security Considerations
 
    [[ TBD. ]]
 
@@ -560,16 +573,16 @@ Table of Contents
    *  Signatures could be replayed outside of their vailidty window if
       not checked.
 
-9.  Privacy Considerations
+10.  Privacy Considerations
 
    [[ TBD. ]]
 
    *  Re-use of a public-key for tokens at multiple RS's can allow
       tracking of a client/user combination based on the key identity.
 
-10.  References
+11.  References
 
-10.1.  Normative References
+11.1.  Normative References
 
    [BCP195]   Best Current Practice 195,
               <https://www.rfc-editor.org/info/bcp195>.
@@ -653,6 +666,11 @@ Table of Contents
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
+   [RFC8032]  Josefsson, S. and I. Liusvaara, "Edwards-Curve Digital
+              Signature Algorithm (EdDSA)", RFC 8032,
+              DOI 10.17487/RFC8032, January 2017,
+              <https://www.rfc-editor.org/rfc/rfc8032>.
+
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
@@ -667,7 +685,7 @@ Table of Contents
               HTTP", RFC 9651, DOI 10.17487/RFC9651, September 2024,
               <https://www.rfc-editor.org/rfc/rfc9651>.
 
-10.2.  Informative References
+11.2.  Informative References
 
    [I-D.ietf-oauth-client-id-metadata-document]
               Parecki, A. and E. Smith, "OAuth Client ID Metadata
@@ -690,6 +708,13 @@ Table of Contents
               <https://www.rfc-editor.org/rfc/rfc9701>.
 
 Appendix A.  Document History
+
+   *  -03
+
+      -  Added co-authors
+
+      -  Changed inline key presentation from header to signature
+         parameter
 
    *  -02
 
@@ -759,6 +784,11 @@ B.5.  Accept-Signature Support
    The Accept-Signature mechanism in [HTTPSIG] allows for runtime
    discovery of not only the applicability of signatures but also the
    expected coverage, for particular uses.
+
+Appendix C.  Test Vectors
+
+   [[ Editor's note: we really should have end-to-end test vectors with
+   keys and stuff all in here, not just inline. ]]
 
 Authors' Addresses
 

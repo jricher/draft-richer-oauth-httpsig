@@ -1051,7 +1051,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Richer, et al.</td>
-<td class="center">Expires 27 January 2027</td>
+<td class="center">Expires 28 January 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1064,12 @@ svg {
 <dd class="internet-draft">draft-richer-oauth-httpsig-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-07-26" class="published">26 July 2026</time>
+<time datetime="2026-07-27" class="published">27 July 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-01-27">27 January 2027</time></dd>
+<dd class="expires"><time datetime="2027-01-28">28 January 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1124,7 +1124,7 @@ HTTP Message Signatures to bind access tokens to keys held by OAuth 2.0 clients.
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 27 January 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 28 January 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1181,70 +1181,87 @@ HTTP Message Signatures to bind access tokens to keys held by OAuth 2.0 clients.
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-issuing-an-http-message-sig" class="internal xref">Issuing an HTTP Message Signature Bound Access Token</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-embedding-a-public-key-valu" class="internal xref">Embedding a Public Key Value</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-encoding-confirmation-in-a-" class="internal xref">Encoding Confirmation in a JWT</a></p>
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-elliptic-curve" class="internal xref">Elliptic Curve</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
-                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-returning-confirmation-in-t" class="internal xref">Returning Confirmation in Token Introspection</a></p>
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-edwards-elliptic-curve" class="internal xref">Edwards Elliptic Curve</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-rsa" class="internal xref">RSA</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-presenting-an-http-message-" class="internal xref">Presenting an HTTP Message Signature Bound Access Token</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-issuing-an-http-message-sig" class="internal xref">Issuing an HTTP Message Signature Bound Access Token</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-encoding-confirmation-in-a-" class="internal xref">Encoding Confirmation in a JWT</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-returning-confirmation-in-t" class="internal xref">Returning Confirmation in Token Introspection</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-validating-an-http-message-" class="internal xref">Validating an HTTP Message Signature Bound Access Token Request</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-presenting-an-http-message-" class="internal xref">Presenting an HTTP Message Signature Bound Access Token</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-validating-an-http-message-" class="internal xref">Validating an HTTP Message Signature Bound Resource Request</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-references" class="internal xref">References</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
-                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
-                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
-</li>
-            </ul>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-document-history" class="internal xref">Document History</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-potential-other-work" class="internal xref">Potential Other Work</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-references" class="internal xref">References</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
-                <p id="section-toc.1-1.12.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-client-authentication" class="internal xref">Client Authentication</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
-                <p id="section-toc.1-1.12.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-as-responses" class="internal xref">AS Responses</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.3">
-                <p id="section-toc.1-1.12.2.3.1"><a href="#appendix-B.3" class="auto internal xref">B.3</a>.  <a href="#name-non-repudiation-of-requests" class="internal xref">Non-Repudiation of Requests</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.4">
-                <p id="section-toc.1-1.12.2.4.1"><a href="#appendix-B.4" class="auto internal xref">B.4</a>.  <a href="#name-par-key-introduction" class="internal xref">PAR Key Introduction</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.5">
-                <p id="section-toc.1-1.12.2.5.1"><a href="#appendix-B.5" class="auto internal xref">B.5</a>.  <a href="#name-accept-signature-support" class="internal xref">Accept-Signature Support</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
 </li>
             </ul>
 </li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-document-history" class="internal xref">Document History</a></p>
+</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-potential-other-work" class="internal xref">Potential Other Work</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
+                <p id="section-toc.1-1.13.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-client-authentication" class="internal xref">Client Authentication</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
+                <p id="section-toc.1-1.13.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-as-responses" class="internal xref">AS Responses</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.3">
+                <p id="section-toc.1-1.13.2.3.1"><a href="#appendix-B.3" class="auto internal xref">B.3</a>.  <a href="#name-non-repudiation-of-requests" class="internal xref">Non-Repudiation of Requests</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.4">
+                <p id="section-toc.1-1.13.2.4.1"><a href="#appendix-B.4" class="auto internal xref">B.4</a>.  <a href="#name-par-key-introduction" class="internal xref">PAR Key Introduction</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.5">
+                <p id="section-toc.1-1.13.2.5.1"><a href="#appendix-B.5" class="auto internal xref">B.5</a>.  <a href="#name-accept-signature-support" class="internal xref">Accept-Signature Support</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-test-vectors" class="internal xref">Test Vectors</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
+            <p id="section-toc.1-1.15.1"><a href="#appendix-D" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1297,7 +1314,7 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
           <p id="section-2-2.2.1">A runtime method that allows a client to introduce key material during the token request phase of <span>[<a href="#OAUTH" class="cite xref">OAUTH</a>]</span><a href="#section-2-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-2-3">As part of its registration, a client MUST indicate which method it will use, using either the <code>httpsig_key_binding_method</code> client registration metadata parameter defined (TBD) in <a href="#IANA" class="auto internal xref">Section 7</a> when using Dynamic Client Registration (<span>[<a href="#DYNREG" class="cite xref">DYNREG</a>]</span>) or Client ID Metadata Document (<span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>), or via an out of band method.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-2-3">As part of its registration, a client MUST indicate which method it will use, using either the <code>httpsig_key_binding_method</code> client registration metadata parameter defined (TBD) in <a href="#IANA" class="auto internal xref">Section 8</a> when using Dynamic Client Registration (<span>[<a href="#DYNREG" class="cite xref">DYNREG</a>]</span>) or Client ID Metadata Document (<span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>), or via an out of band method.<a href="#section-2-3" class="pilcrow">¶</a></p>
 <p id="section-2-4">[[ Editor's note: do we want to add an AS/RS metadata parameter to signal support for each type? ]]<a href="#section-2-4" class="pilcrow">¶</a></p>
 <p id="section-2-5">[[ Editor's note: Are there any other patterns of key introduction we should cover? I put PAR in the appendix as a note. ]]<a href="#section-2-5" class="pilcrow">¶</a></p>
 <div id="preregister">
@@ -1308,7 +1325,8 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
 <p id="section-2.1-1">A client pre-registering its keys for <span>[<a href="#HTTPSIG" class="cite xref">HTTPSIG</a>]</span> binding MUST include the key in its registered <code>jwks</code> value or make it available from its <code>jwks_uri</code> endpoint. The JWK MUST have a <code>kid</code> field and MUST indicate a signing algorithm in its <code>alg</code> field. The key ID for the public key used for HTTP Message Signature bound access tokens MUST be identified using the <code>httpsig_bound_access_token_kid</code> field in the client's metadata.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
 <p id="section-2.1-2">[[ Editor's note: do we want to have a client field for the signing alg or just leave that to the key all the time? I prefer to keep it in the key. ]]<a href="#section-2.1-2" class="pilcrow">¶</a></p>
 <p id="section-2.1-3">A pre-registered key MAY be a shared secret (such as for use in an HMAC signature), but public key cryptography is RECOMMENDED.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
-<p id="section-2.1-4">Note that pre-registration can occur statically or dynamically (such as by using <span>[<a href="#DYNREG" class="cite xref">DYNREG</a>]</span>), as long as the key is associated with the client's <code>client_id</code> before the token request is made.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
+<p id="section-2.1-4">If the key is pre-registered, the signature algorithm MUST be derived from the indicated key and the <code>alg</code> signature parameter MUST NOT be used.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
+<p id="section-2.1-5">Note that pre-registration can occur statically or dynamically (such as by using <span>[<a href="#DYNREG" class="cite xref">DYNREG</a>]</span>), as long as the key is associated with the client's <code>client_id</code> before the token request is made.<a href="#section-2.1-5" class="pilcrow">¶</a></p>
 <div id="example-client-registration">
 <section id="section-2.1.1">
           <h4 id="name-example-client-registration">
@@ -1346,34 +1364,20 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
         <h3 id="name-token-request-key-introduct">
 <a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-token-request-key-introduct" class="section-name selfRef">Token Request Key Introduction</a>
         </h3>
-<p id="section-2.2-1">Instead of pre-registering a key, a client can introduce its key during the token request in the same fashion as <span>[<a href="#DPOP" class="cite xref">DPOP</a>]</span>.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.2-2">The client MUST present its public key in the Signature-Key header field. The field is an HTTP Structured Field consisting of a Binary value containing the bytes of the <span>[<a href="#JSON" class="cite xref">JSON</a>]</span> serialized <span>[<a href="#JWK" class="cite xref">JWK</a>]</span> form of the key material.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
-<p id="section-2.2-3">The JWK MUST have a <code>kid</code> field. The key MUST be a public key (and neither a private key nor a shared secret key). The JWK MUST have an <code>alg</code> value that indicates a signature algorithm.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
-<p id="section-2.2-4">For example, the following JWK public key:<a href="#section-2.2-4" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-2.2-5">
-<pre>
-{
-    "kty": "OKP",
-    "use": "sig",
-    "crv": "Ed25519",
-    "kid": "j-0Ny45NWmqGq6GQ",
-    "x": "iuemcj_GhRHmY_yCsMlDNp3BQgPZDdG00VRsg_BgU3s",
-    "alg": "EdDSA"
-}
-</pre><a href="#section-2.2-5" class="pilcrow">¶</a>
-</div>
-<p id="section-2.2-6">Can be encoded to the following Signature-Key field value (this example uses a compact JSON serialization that removes whitespace):<a href="#section-2.2-6" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-2.2-7">
-<pre>
-NOTE: '\' line wrapping per RFC 8792
-
-Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
-  iwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2Vm\
-  USIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTN\
-  zIiwiYWxnIjoiRWREU0EifQ==:
-</pre><a href="#section-2.2-7" class="pilcrow">¶</a>
-</div>
-<p id="section-2.2-8">[[ Editor's note: this is a really awkward way to encode a JWK. We could try to break apart the JSON but there's not a 1:1 map to HTTP Structured Fields we can rely on. We could just put the minified JSON into a string but the double quotes would need to be escaped. This is the least bad version I could come up with right now. ]]<a href="#section-2.2-8" class="pilcrow">¶</a></p>
+<p id="section-2.2-1">Instead of pre-registering a key, a client can introduce its key during the token request in a similar fashion as <span>[<a href="#DPOP" class="cite xref">DPOP</a>]</span>.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">To use this mode, the client MUST:<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2-3.1">
+            <p id="section-2.2-3.1.1">Include the <code>alg</code> signature parameter with a valid value from the HTTP Message Signatures Algorithms Registry indicating an asymmetric signature algorithm.<a href="#section-2.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.2-3.2">
+            <p id="section-2.2-3.2.1">Include its public key in the key type specific parameters as described in <a href="#embed-keys" class="auto internal xref">Section 3</a>.<a href="#section-2.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.2-3.3">
+            <p id="section-2.2-3.3.1">Include the <code>keyid</code> signature parameter uniquely identifying the key.<a href="#section-2.2-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.2-4">The included key MUST be appropriate for the indicated algorithm.<a href="#section-2.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="request">
@@ -1410,80 +1414,128 @@ Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
             <p id="section-2.3-8.3.1"><code>content-digest</code> the digest of the request body<a href="#section-2.3-8.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.3-9">If a signature key is presented at runtime as described in <a href="#runtime" class="auto internal xref">Section 2.2</a>, the covered components MUST include:<a href="#section-2.3-9" class="pilcrow">¶</a></p>
+<p id="section-2.3-9">The covered components MUST include the client's authentication, if available. If using HTTP Basic, this means including the <code>authorization</code> field.<a href="#section-2.3-9" class="pilcrow">¶</a></p>
+<p id="section-2.3-10">The signature MUST include the following parameters:<a href="#section-2.3-10" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.3-10.1">
-            <p id="section-2.3-10.1.1"><code>signature-key</code> the encoded public key used to sign this request<a href="#section-2.3-10.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2.3-11.1">
+            <p id="section-2.3-11.1.1"><code>created</code> a timestamp for signature creation; this MUST be within a small number of seconds of issuance (e.g. 30 seconds to account for clock skew)<a href="#section-2.3-11.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.3-11.2">
+            <p id="section-2.3-11.2.1"><code>nonce</code> a random unique value that the AS can use to prevent signature replay within the small validity time window<a href="#section-2.3-11.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.3-11.3">
+            <p id="section-2.3-11.3.1"><code>tag</code> a string indicating that this is being used for requesting a bound token, MUST be the value "httpsig-oauth-token-request"<a href="#section-2.3-11.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.3-11.4">
+            <p id="section-2.3-11.4.1"><code>keyid</code> the identifier for the key to be used for binding the token (matching <code>kid</code> in the token); if client uses pre-registered keys as in <a href="#preregister" class="auto internal xref">Section 2.1</a>, the value MUST match the <code>httpsig_bound_access_token_kid</code> value<a href="#section-2.3-11.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-2.3-11">The covered components MUST include the client's authentication, if available. If using HTTP Basic, this means including the <code>authorization</code> field.<a href="#section-2.3-11" class="pilcrow">¶</a></p>
-<p id="section-2.3-12">The signature MUST include the following parameters:<a href="#section-2.3-12" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-2.3-13.1">
-            <p id="section-2.3-13.1.1"><code>created</code> a timestamp for signature creation; this MUST be within a small number of seconds of issuance (e.g. 30 seconds to account for clock skew)<a href="#section-2.3-13.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-2.3-13.2">
-            <p id="section-2.3-13.2.1"><code>nonce</code> a random unique value that the AS can use to prevent signature replay within the small validity time window<a href="#section-2.3-13.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-2.3-13.3">
-            <p id="section-2.3-13.3.1"><code>tag</code> a string indicating that this is being used for requesting a bound token, MUST be the value "httpsig-oauth-token-request"<a href="#section-2.3-13.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-2.3-13.4">
-            <p id="section-2.3-13.4.1"><code>keyid</code> the <code>kid</code> value for the key to be used for binding the token; if client uses pre-registered keys as in <a href="#preregister" class="auto internal xref">Section 2.1</a>, the value MUST match the <code>httpsig_bound_access_token_kid</code> value; if the key is presented at runtime as in <a href="#runtime" class="auto internal xref">Section 2.2</a>, the value MUST match the <code>kid</code> of the JWK in the Signature-Key field<a href="#section-2.3-13.4.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-2.3-14">The signature algorithm MUST be derived from the indicated key. The <code>alg</code> signature parameter MUST NOT be used.<a href="#section-2.3-14" class="pilcrow">¶</a></p>
-<p id="section-2.3-15">An example request to the token endpoint (using a runtime-provided key here) can look like the following:<a href="#section-2.3-15" class="pilcrow">¶</a></p>
-<div class="lang-http-message sourcecode" id="section-2.3-16">
+<p id="section-2.3-12">Additionally, if the key is presented at runtime, the parameters and public key MUST be included as signature parameters as defined in <a href="#runtime" class="auto internal xref">Section 2.2</a>.<a href="#section-2.3-12" class="pilcrow">¶</a></p>
+<p id="section-2.3-13">An example request to the token endpoint (using a runtime-provided key here) can look like the following:<a href="#section-2.3-13" class="pilcrow">¶</a></p>
+<div class="lang-http-message sourcecode" id="section-2.3-14">
 <pre>
+NOTE: '\' line wrapping per RFC 8792
+
 POST /token HTTP/1.1
 Host: server.example.com
 Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
 Content-Type: application/x-www-form-urlencoded
-Signature-Key: :eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5I\
-  iwia2lkIjoiai0wTnk0NU5XbXFHcTZHNFV4TGpHak51bG9rdHVndE9XNGpmR0NDZ2Vm\
-  USIsIngiOiJpdWVtY2pfR2hSSG1ZX3lDc01sRE5wM0JRZ1BaRGRHMDBWUnNnX0JnVTN\
-  zIiwiYWxnIjoiRWREU0EifQ==:
 Content-Digest: sha-256=:4fEzRVTGqfZg7lqf/d3oxXu837pvb3L0GN24+F1VkZk=:
 Signature-Input: sig1=("@method" "@target-uri" "content-digest" \
-  "signature-key" "authorization");created=1618884473\
-  ;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCgefQ"\
-  ;nonce="b3k2pp5k7z-50gnX1b06";tag="httpsig-oauth-token-request"
-Signature: sig1=:AWyxebrJ6u8CMi0B3TyX9G1G3XT45UW5zIn8mhsyXdmjTUtGS+1M\
-  XiydKv5z0GLCrMhVSFe691jF98DRNNSPAg==:
+  "authorization");created=1618884473;keyid="j-0Ny45NWmqGq6G4UxLjGjNu\
+  loktugtOW4jfGCCgefQ";alg="ed25519";nonce="b3k2pp5k7z-50gnX1b06"\
+  ;tag="httpsig-oauth-token-request";pub_key_a=:iuemcj/GhRHmY/yCsMlDN\
+  p3BQgPZDdG00VRsg/BgU3s=:
+Signature: sig1=:ikilCUkL+BjDRXdC7m4eNgU/4dQtijp4BTgehqYRxJX+sPr394dx\
+  qGAPzV99eUVDhN1cgAk2VFXvN2pNfpFTBA==:
 
-grant_type=authorization_code&amp;code=SplxlOBeZQQYbYS6WxSbIA&amp;\
-redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
-</pre><a href="#section-2.3-16" class="pilcrow">¶</a>
+grant_type=authorization_code&amp;code=SplxlOBeZQQYbYS6WxSbIA&amp;redirect_ur\
+  i=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+</pre><a href="#section-2.3-14" class="pilcrow">¶</a>
 </div>
+</section>
+</div>
+</section>
+</div>
+<div id="embed-keys">
+<section id="section-3">
+      <h2 id="name-embedding-a-public-key-valu">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-embedding-a-public-key-valu" class="section-name selfRef">Embedding a Public Key Value</a>
+      </h2>
+<p id="section-3-1">When encoding a public key value in a runtime request as in <a href="#runtime" class="auto internal xref">Section 2.2</a>, the client includes the public key material appropriate to the signature algorithm being used.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div id="elliptic-curve">
+<section id="section-3.1">
+        <h3 id="name-elliptic-curve">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-elliptic-curve" class="section-name selfRef">Elliptic Curve</a>
+        </h3>
+<p id="section-3.1-1">If the <code>alg</code> value is <code>ecdsa-p256-sha256</code> or <code>ecdsa-p384-sha384</code>, the public key is encoded in two additional signature parameters and values attached to the signature input:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.1-2.1">
+            <p id="section-3.1-2.1.1"><code>pub_key_x</code>: the big-endian encoded, zero-padded bytes of the key's X value, encoded as a Byte Sequence<a href="#section-3.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-2.2">
+            <p id="section-3.1-2.2.1"><code>pub_key_y</code>: the big-endian encoded, zero-padded bytes of the key's Y value, encoded as a Byte Sequence<a href="#section-3.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.1-3">For <code>ecdsa-p256-sha256</code>, the key values are padded to exactly 32 bytes each. For <code>ecdsa-p384-sha384</code>, the key values are padded to exactly 48 bytes each.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="edwards-elliptic-curve">
+<section id="section-3.2">
+        <h3 id="name-edwards-elliptic-curve">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-edwards-elliptic-curve" class="section-name selfRef">Edwards Elliptic Curve</a>
+        </h3>
+<p id="section-3.2-1">If the <code>alg</code> value is <code>ed25519</code>, the public key is encoded in one additional signature parameter and value attached to the signature input:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.2-2.1">
+            <p id="section-3.2-2.1.1"><code>pub_key_a</code>: the little-endian encoded compressed Edwards point defined in <span>[<a href="#RFC8032" class="cite xref">RFC8032</a>]</span>, encoded as a Byte Sequence<a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.2-3">The key value is exactly 32 bytes in length.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="rsa">
+<section id="section-3.3">
+        <h3 id="name-rsa">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-rsa" class="section-name selfRef">RSA</a>
+        </h3>
+<p id="section-3.3-1">If the <code>alg</code> value is <code>rsa-pss-sha512</code> or <code>rsa-v1_5-sha256</code>, the public key is encoded in two additional signature parameters and values attached to the signature input:<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.3-2.1">
+            <p id="section-3.3-2.1.1"><code>pub_key_n</code>: the big-endian encoded unsigned modulus of the key (no sign byte and no leading 0x00 octet), encoded as a Byte Sequence<a href="#section-3.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-2.2">
+            <p id="section-3.3-2.2.1"><code>pub_key_e</code>: the big-endian encoded exponent of the key, encoded as a Byte Sequence<a href="#section-3.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 </section>
 </div>
 <div id="issuing">
-<section id="section-3">
+<section id="section-4">
       <h2 id="name-issuing-an-http-message-sig">
-<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-issuing-an-http-message-sig" class="section-name selfRef">Issuing an HTTP Message Signature Bound Access Token</a>
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-issuing-an-http-message-sig" class="section-name selfRef">Issuing an HTTP Message Signature Bound Access Token</a>
       </h2>
-<p id="section-3-1">The AS MUST validate the signature of the token request sent in <a href="#request" class="auto internal xref">Section 2.3</a> against the identified key and the algorithm associated with that key.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">The request MUST fail with an error if any of the following occur:<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-4-1">The AS MUST validate the signature of the token request sent in <a href="#request" class="auto internal xref">Section 2.3</a> against the identified key and the algorithm associated with that key.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">The request MUST fail with an error if any of the following occur:<a href="#section-4-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3-3.1">
-          <p id="section-3-3.1.1">The key named in <code>kid</code> cannot be found or is not associated with the requesting client<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-4-3.1">
+          <p id="section-4-3.1.1">The key named in <code>kid</code> cannot be found or is not associated with the requesting client<a href="#section-4-3.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-3.2">
-          <p id="section-3-3.2.1">There is more than one signature with the tag "httpsig-oauth-token-request"<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-4-3.2">
+          <p id="section-4-3.2.1">There is more than one signature with the tag "httpsig-oauth-token-request"<a href="#section-4-3.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-3.3">
-          <p id="section-3-3.3.1">The <code>created</code> value of the signature is too far in the past<a href="#section-3-3.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-4-3.3">
+          <p id="section-4-3.3.1">The <code>created</code> value of the signature is too far in the past<a href="#section-4-3.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-3.4">
-          <p id="section-3-3.4.1">The <code>nonce</code> value is used more than once within the validity window of the signature<a href="#section-3-3.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-4-3.4">
+          <p id="section-4-3.4.1">The <code>nonce</code> value is used more than once within the validity window of the signature<a href="#section-4-3.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-3-4">When issuing an access token bound to a key using HTTP Message Signatures, the AS associates the granted token with the key used in the requesting signature. All presentations of this token at any RS MUST contain an HTTP message signature as described in <a href="#presenting" class="auto internal xref">Section 4</a>.<a href="#section-3-4" class="pilcrow">¶</a></p>
-<p id="section-3-5">An HTTP Message Signature bound access token MUST have a <code>token_type</code> value of <code>httpsig</code>.<a href="#section-3-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3-6">
+<p id="section-4-4">When issuing an access token bound to a key using HTTP Message Signatures, the AS associates the granted token with the key used in the requesting signature. All presentations of this token at any RS MUST contain an HTTP message signature as described in <a href="#presenting" class="auto internal xref">Section 5</a>.<a href="#section-4-4" class="pilcrow">¶</a></p>
+<p id="section-4-5">An HTTP Message Signature bound access token MUST have a <code>token_type</code> value of <code>httpsig</code>.<a href="#section-4-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4-6">
 <pre>
 HTTP 200 OK
 Content-Type: application/json
@@ -1492,80 +1544,80 @@ Content-Type: application/json
     "access_token": "2340897.34j123-134uh2345n",
     "token_type": "httpsig"
 }
-</pre><a href="#section-3-6" class="pilcrow">¶</a>
+</pre><a href="#section-4-6" class="pilcrow">¶</a>
 </div>
-<p id="section-3-7">The client MUST associate this returned access token with the key used to make the requst.<a href="#section-3-7" class="pilcrow">¶</a></p>
-<p id="section-3-8">[[ Editor's note: we should define confirmation methods for access tokens here, including JWT values and introspection response values to allow the RS to verify the signature w/o the client's registration information. Leaving the following sections as placeholders. ]]<a href="#section-3-8" class="pilcrow">¶</a></p>
+<p id="section-4-7">The client MUST associate this returned access token with the key used to make the requst.<a href="#section-4-7" class="pilcrow">¶</a></p>
+<p id="section-4-8">[[ Editor's note: we should define confirmation methods for access tokens here, including JWT values and introspection response values to allow the RS to verify the signature w/o the client's registration information. Leaving the following sections as placeholders. ]]<a href="#section-4-8" class="pilcrow">¶</a></p>
 <div id="encoding-confirmation-in-a-jwt">
-<section id="section-3.1">
+<section id="section-4.1">
         <h3 id="name-encoding-confirmation-in-a-">
-<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-encoding-confirmation-in-a-" class="section-name selfRef">Encoding Confirmation in a JWT</a>
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-encoding-confirmation-in-a-" class="section-name selfRef">Encoding Confirmation in a JWT</a>
       </h3>
 </section>
 </div>
 <div id="returning-confirmation-in-token-introspection">
-<section id="section-3.2">
+<section id="section-4.2">
         <h3 id="name-returning-confirmation-in-t">
-<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-returning-confirmation-in-t" class="section-name selfRef">Returning Confirmation in Token Introspection</a>
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-returning-confirmation-in-t" class="section-name selfRef">Returning Confirmation in Token Introspection</a>
       </h3>
 </section>
 </div>
 </section>
 </div>
 <div id="presenting">
-<section id="section-4">
+<section id="section-5">
       <h2 id="name-presenting-an-http-message-">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-presenting-an-http-message-" class="section-name selfRef">Presenting an HTTP Message Signature Bound Access Token</a>
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-presenting-an-http-message-" class="section-name selfRef">Presenting an HTTP Message Signature Bound Access Token</a>
       </h2>
-<p id="section-4-1">HTTP Message Signature bound access token MUST be presented in an HTTP Authorization field using the <code>HTTPSig</code> authorization scheme.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4-2">
+<p id="section-5-1">HTTP Message Signature bound access token MUST be presented in an HTTP Authorization field using the <code>HTTPSig</code> authorization scheme.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5-2">
 <pre>
 Authorization: HTTPSig 2340897.34j123-134uh2345n
-</pre><a href="#section-4-2" class="pilcrow">¶</a>
+</pre><a href="#section-5-2" class="pilcrow">¶</a>
 </div>
-<p id="section-4-3">Note that HTTP authorization schemes defined in <span>[<a href="#HTTPAUTH" class="cite xref">HTTPAUTH</a>]</span> are case-insensitive, and so all the following are equivalent:<a href="#section-4-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4-4">
+<p id="section-5-3">Note that HTTP authorization schemes defined in <span>[<a href="#HTTPAUTH" class="cite xref">HTTPAUTH</a>]</span> are case-insensitive, and so all the following are equivalent:<a href="#section-5-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5-4">
 <pre>
 Authorization: HTTPSig 2340897.34j123-134uh2345n
 Authorization: httpsig 2340897.34j123-134uh2345n
 Authorization: HTTPSIG 2340897.34j123-134uh2345n
 Authorization: Httpsig 2340897.34j123-134uh2345n
 Authorization: hTtPsIg 2340897.34j123-134uh2345n
-</pre><a href="#section-4-4" class="pilcrow">¶</a>
+</pre><a href="#section-5-4" class="pilcrow">¶</a>
 </div>
-<p id="section-4-5">When presenting an HTTP Message Signature bound access token to an RS, the client MUST include a signature compliant with <span>[<a href="#HTTPSIG" class="cite xref">HTTPSIG</a>]</span>. The covered components MUST include:<a href="#section-4-5" class="pilcrow">¶</a></p>
+<p id="section-5-5">When presenting an HTTP Message Signature bound access token to an RS, the client MUST include a signature compliant with <span>[<a href="#HTTPSIG" class="cite xref">HTTPSIG</a>]</span>. The covered components MUST include:<a href="#section-5-5" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4-6.1">
-          <p id="section-4-6.1.1"><code>@method</code> the HTTP method of the request<a href="#section-4-6.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5-6.1">
+          <p id="section-5-6.1.1"><code>@method</code> the HTTP method of the request<a href="#section-5-6.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-6.2">
-          <p id="section-4-6.2.1"><code>@target-uri</code> the full request URI of the request (note that this includes the scheme, authority, path, and query)<a href="#section-4-6.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-5-6.2">
+          <p id="section-5-6.2.1"><code>@target-uri</code> the full request URI of the request (note that this includes the scheme, authority, path, and query)<a href="#section-5-6.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-6.3">
-          <p id="section-4-6.3.1"><code>authorization</code> the access token value being presented<a href="#section-4-6.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-5-6.3">
+          <p id="section-5-6.3.1"><code>authorization</code> the access token value being presented<a href="#section-5-6.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-4-7">The RS MAY require additional components to be covered by the signature, and the client MUST include any additional fields or components of the HTTP request that are relevant to the security of the RS. For example, if the API being served by the RS declares that incoming content type makes a material difference, the RS SHOULD require signing of the Content-Type header in addition to the above.<a href="#section-4-7" class="pilcrow">¶</a></p>
-<p id="section-4-8">The request MAY include multiple signatures to serve different needs.<a href="#section-4-8" class="pilcrow">¶</a></p>
-<p id="section-4-9">If the request includes an entity body (such as a POST, PUT, or QUERY), the client SHOULD calculate the digest as per <span>[<a href="#DIGEST" class="cite xref">DIGEST</a>]</span> and also sign the digest header (such as Content-Digest).<a href="#section-4-9" class="pilcrow">¶</a></p>
-<p id="section-4-10">The signature MUST include the following parameters:<a href="#section-4-10" class="pilcrow">¶</a></p>
+<p id="section-5-7">The RS MAY require additional components to be covered by the signature, and the client MUST include any additional fields or components of the HTTP request that are relevant to the security of the RS. For example, if the API being served by the RS declares that incoming content type makes a material difference, the RS SHOULD require signing of the Content-Type header in addition to the above.<a href="#section-5-7" class="pilcrow">¶</a></p>
+<p id="section-5-8">The request MAY include multiple signatures to serve different needs.<a href="#section-5-8" class="pilcrow">¶</a></p>
+<p id="section-5-9">If the request includes an entity body (such as a POST, PUT, or QUERY), the client SHOULD calculate the digest as per <span>[<a href="#DIGEST" class="cite xref">DIGEST</a>]</span> and also sign the digest header (such as Content-Digest).<a href="#section-5-9" class="pilcrow">¶</a></p>
+<p id="section-5-10">The signature MUST include the following parameters:<a href="#section-5-10" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4-11.1">
-          <p id="section-4-11.1.1"><code>created</code> a timestamp for signature creation; this MUST be within a small number of seconds of issuance (e.g. 30 seconds to account for clock skew)<a href="#section-4-11.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5-11.1">
+          <p id="section-5-11.1.1"><code>created</code> a timestamp for signature creation; this MUST be within a small number of seconds of issuance (e.g. 30 seconds to account for clock skew)<a href="#section-5-11.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-11.2">
-          <p id="section-4-11.2.1"><code>nonce</code> a random unique value that the AS can use to prevent signature replay within the small validity time window<a href="#section-4-11.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-5-11.2">
+          <p id="section-5-11.2.1"><code>nonce</code> a random unique value that the AS can use to prevent signature replay within the small validity time window<a href="#section-5-11.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-11.3">
-          <p id="section-4-11.3.1"><code>tag</code> a string indicating that this is being used for requesting a bound token, MUST be the value "httpsig-oauth"<a href="#section-4-11.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-5-11.3">
+          <p id="section-5-11.3.1"><code>tag</code> a string indicating that this is being used for requesting a bound token, MUST be the value "httpsig-oauth"<a href="#section-5-11.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-11.4">
-          <p id="section-4-11.4.1"><code>keyid</code> the <code>kid</code> value for the key used to sign the request<a href="#section-4-11.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-5-11.4">
+          <p id="section-5-11.4.1"><code>keyid</code> the identifier for the key used to sign the request<a href="#section-5-11.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-4-12">The client MUST NOT include an <code>alg</code> signature parameter.<a href="#section-4-12" class="pilcrow">¶</a></p>
-<p id="section-4-13">For example, the following signed request includes a signature with the needed parameters:<a href="#section-4-13" class="pilcrow">¶</a></p>
-<div class="lang-http-message sourcecode" id="section-4-14">
+<p id="section-5-12">The client MUST NOT include an <code>alg</code> signature parameter.<a href="#section-5-12" class="pilcrow">¶</a></p>
+<p id="section-5-13">For example, the following signed request includes a signature with the needed parameters:<a href="#section-5-13" class="pilcrow">¶</a></p>
+<div class="lang-http-message sourcecode" id="section-5-14">
 <pre>
 NOTE: '\' line wrapping per RFC 8792
 
@@ -1578,40 +1630,46 @@ Signature-Input: sig1=("@method" "@target-uri" "authorization")\
   efQ";nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
 Signature: sig1=:kFJC2WoBbrQc8tsKiowIb8oeIA533qmKvzdKf8kndJ7kaLxGmm2v\
   9+IPB8kLE0WUea8KryJGSV7ji1apLkeKBg==:
-</pre><a href="#section-4-14" class="pilcrow">¶</a>
+</pre><a href="#section-5-14" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="validating">
-<section id="section-5">
+<section id="section-6">
       <h2 id="name-validating-an-http-message-">
-<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-validating-an-http-message-" class="section-name selfRef">Validating an HTTP Message Signature Bound Access Token Request</a>
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-validating-an-http-message-" class="section-name selfRef">Validating an HTTP Message Signature Bound Resource Request</a>
       </h2>
-<p id="section-5-1">In order for a request protected by an HTTP Message Signature bound access token to be considered valid, the RS MUST perform the following checks:<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">In order for a request protected by an HTTP Message Signature bound access token to be considered valid, the RS MUST perform the following checks:<a href="#section-6-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5-2.1">
-          <p id="section-5-2.1.1">The presented signature validates using the key associated with the token<a href="#section-5-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-6-2.1">
+          <p id="section-6-2.1.1">The presented signature validates using the key bound to the token<a href="#section-6-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-5-2.2">
-          <p id="section-5-2.2.1">The signature validates using the algorithm associated with the key<a href="#section-5-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-6-2.2">
+          <p id="section-6-2.2.1">The signature validates using the HTTP_VERIFY algorithm associated with the key<a href="#section-6-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-5-2.3">
-          <p id="section-5-2.3.1">The <code>created</code> value is not too far in the past (e.g. 30 seconds to account for clock skew and network delays)<a href="#section-5-2.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-6-2.3">
+          <p id="section-6-2.3.1">The <code>keyid</code> value matches the identifier for the key bound to the token<a href="#section-6-2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-5-2.4">
-          <p id="section-5-2.4.1">The <code>nonce</code> value has not been previously used within the time validity window of this request<a href="#section-5-2.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-6-2.4">
+          <p id="section-6-2.4.1">The <code>created</code> value is not too far in the past (e.g. 30 seconds to account for clock skew and network delays)<a href="#section-6-2.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-5-2.5">
-          <p id="section-5-2.5.1">The <code>tag</code> value is "httpsig-oauth"<a href="#section-5-2.5.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-6-2.5">
+          <p id="section-6-2.5.1">The <code>nonce</code> value has not been previously used within the time validity window of this request<a href="#section-6-2.5.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-5-2.6">
-          <p id="section-5-2.6.1">The covered components and parameters include all items enumerated in <a href="#presenting" class="auto internal xref">Section 4</a><a href="#section-5-2.6.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-6-2.6">
+          <p id="section-6-2.6.1">The <code>tag</code> value is "httpsig-oauth"<a href="#section-6-2.6.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-6-2.7">
+          <p id="section-6-2.7.1">The covered components and parameters include all items enumerated in <a href="#presenting" class="auto internal xref">Section 5</a>, including the Authorization header field<a href="#section-6-2.7.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-6-2.8">
+          <p id="section-6-2.8.1">The <code>alg</code> parameter is not present<a href="#section-6-2.8.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-5-3">If the request includes an entity body (such as a POST, PUT, or QUERY) and a digest as per <span>[<a href="#DIGEST" class="cite xref">DIGEST</a>]</span>, the RS MUST validate the digest.<a href="#section-5-3" class="pilcrow">¶</a></p>
-<p id="section-5-4">If the request includes multiple signatures tagged "httpsig-oauth", all signatures MUST be validated.<a href="#section-5-4" class="pilcrow">¶</a></p>
-<p id="section-5-5">For example, to validate the request:<a href="#section-5-5" class="pilcrow">¶</a></p>
-<div class="lang-http-message sourcecode" id="section-5-6">
+<p id="section-6-3">If the request includes an entity body (such as a POST, PUT, or QUERY) and a digest as per <span>[<a href="#DIGEST" class="cite xref">DIGEST</a>]</span>, the RS MUST validate the digest.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">If the request includes multiple signatures tagged "httpsig-oauth", all signatures MUST be validated.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-5">For example, to validate the request:<a href="#section-6-5" class="pilcrow">¶</a></p>
+<div class="lang-http-message sourcecode" id="section-6-6">
 <pre>
 NOTE: '\' line wrapping per RFC 8792
 
@@ -1620,107 +1678,91 @@ Host: example.com
 Date: Mon, 20 Apr 2026 02:07:55 GMT
 Authorization: HTTPSig 2340897.34j123-134uh2345n
 Signature-Input: sig1=("@method" "@target-uri" "authorization")\
-  ;created=1776650875;keyid="j-0Ny45NWmqGq6G4UxLjGjNuloktugtOW4jfGCCg\
-  efQ";nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
-Signature: sig1=:kFJC2WoBbrQc8tsKiowIb8oeIA533qmKvzdKf8kndJ7kaLxGmm2v\
-  9+IPB8kLE0WUea8KryJGSV7ji1apLkeKBg==:
-</pre><a href="#section-5-6" class="pilcrow">¶</a>
+  ;created=1776650875;keyid="test-key-ecdsa-p256"\
+  ;nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
+Signature: sig1=:ggBLokBFCW7NcE4z1P5zV1wn7vmnRADiMcpAVFb1q8kOQ3nlhXqQ\
+  c9LPWdz1h4FGRtImK9LqNdDdpn9G4o9zRw==:
+</pre><a href="#section-6-6" class="pilcrow">¶</a>
 </div>
-<p id="section-5-7">The RS determines the key bound to the token and validates the <code>kid</code> value against that key. The RS determines the algorithm from the key and performs signature validation per <span>[<a href="#HTTPSIG" class="cite xref">HTTPSIG</a>]</span> on the<a href="#section-5-7" class="pilcrow">¶</a></p>
-<p id="section-5-8">In this example, the client has a key with the <code>kid</code> value of <code>test-key-rsa-pss</code> which uses the JWA <code>alg</code> value of <code>PS512</code>. The signature input string is:<a href="#section-5-8" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5-9">
-<pre>
-"@request-target": get /foo
-"host": example.org
-"authorization": HTTPSig 2340897.34j123-134uh2345n
-"@signature-params": ("@request-target" "host" "authorization")\
-  ;created=1618884475;keyid="test-key-rsa-pss"
-</pre><a href="#section-5-9" class="pilcrow">¶</a>
-</div>
-<p id="section-5-10">This results in the following signed HTTP message, including the access token.<a href="#section-5-10" class="pilcrow">¶</a></p>
-<div class="lang-http-message sourcecode" id="section-5-11">
+<p id="section-6-7">The RS determines the key bound to the token (in this example, assume the RS introspects the token to get the key material) and validates the <code>kid</code> value against that the <code>keyid</code> in the signature input. The RS determines the algorithm from the key material.<a href="#section-6-7" class="pilcrow">¶</a></p>
+<p id="section-6-8">In this example, the client has a key with the <code>kid</code> value of <code>test-key-ecdsa-p256</code>. The signature input string is:<a href="#section-6-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-6-9">
 <pre>
 NOTE: '\' line wrapping per RFC 8792
 
-GET /foo HTTP/1.1
-Host: example.com
-Date: Tue, 20 Apr 2021 02:07:55 GMT
-Authorization: HTTPSig 2340897.34j123-134uh2345n
-Signature-Input: sig1=("@request-target" "host" "authorization")\
-  ;created=1618884475;keyid="test-key-rsa-pss"
-Signature: sig1=:o+Fy/a6IIWhHwnMFhsHqfXEpheWGBMOU3pheT50zA8rL5F8Nur\
-  xBKAPylMGBWYCKH5Bd+TB0Co6vqANlXyOCM9Zr5c/UmR5WGex5/OgJJmfN7gOVOH5\
-  pB2Zxa233xsohfwo9liBlctukN5//E3F04rKjIkoeTFJiS+hMcOzn29esgFSEl4Jy\
-  oO5Q8snMIsC56ZAPYwU7rJis1Wvl6Y9/9tpW6gIn/SHwArhPQSAb0zZy6mCiw654n\
-  CaKw5NYJ9S0DZlnV4T7nJtdZsHOkddF6kH4WVka3ev0xONI5kYkEdR1Gw0VAE9thi\
-  p+3/aFoUVTJ/1J6JfehZpXqehwv3KNoQ==:
-</pre><a href="#section-5-11" class="pilcrow">¶</a>
+"@method": GET
+"@target-uri": https://example.com/foo
+"authorization": HTTPSig 2340897.34j123-134uh2345n
+"@signature-params": ("@method" "@target-uri" "authorization")\
+  ;created=1776650875;keyid="test-key-ecdsa-p256"\
+  ;nonce="k9Jyxempel2305Nmx7Rk";tag="httpsig-oauth"
+</pre><a href="#section-6-9" class="pilcrow">¶</a>
 </div>
-<p id="section-5-12">An RS receiving such a signed message and a bound access token MUST verify the HTTP Message Signature as described in <span>[<a href="#HTTPSIG" class="cite xref">HTTPSIG</a>]</span>. The RS MUST verify that all required portions of the HTTP request are covered by the signature by examining the contents of the signature parameters.<a href="#section-5-12" class="pilcrow">¶</a></p>
+<p id="section-6-10">The RS then calculates the signature validation against the signature base using the key using the algorithm appropriate HTTP_VERIFY function, per <span>[<a href="#HTTPSIG" class="cite xref">HTTPSIG</a>]</span>.<a href="#section-6-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="Acknowledgements">
-<section id="section-6">
+<section id="section-7">
       <h2 id="name-acknowledgements">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
     </h2>
 </section>
 </div>
 <div id="IANA">
-<section id="section-7">
+<section id="section-8">
       <h2 id="name-iana-considerations">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-7-1">[[ TBD: register the token type and new parameters into their appropriate registries, as well as the JWT and introspection parameters needed for confirmation methods. ]]<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-8-1">[[ TBD: register the token type and new parameters into their appropriate registries, as well as the JWT and introspection parameters needed for confirmation methods. ]]<a href="#section-8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="Security">
-<section id="section-8">
+<section id="section-9">
       <h2 id="name-security-considerations">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-8-1">[[ TBD. ]]<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-9-1">[[ TBD. ]]<a href="#section-9-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-8-2.1">
-          <p id="section-8-2.1.1">All requests have to be over TLS or equivalent as per <span>[<a href="#BCP195" class="cite xref">BCP195</a>]</span>.<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-9-2.1">
+          <p id="section-9-2.1.1">All requests have to be over TLS or equivalent as per <span>[<a href="#BCP195" class="cite xref">BCP195</a>]</span>.<a href="#section-9-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-8-2.2">
-          <p id="section-8-2.2.1">Leakage of a private key alongside a token allows for re-presentation of that token.<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-9-2.2">
+          <p id="section-9-2.2.1">Leakage of a private key alongside a token allows for re-presentation of that token.<a href="#section-9-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-8-2.3">
-          <p id="section-8-2.3.1">Insufficient coverage of a message allows a signature to be attached to a different message.<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-9-2.3">
+          <p id="section-9-2.3.1">Insufficient coverage of a message allows a signature to be attached to a different message.<a href="#section-9-2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-8-2.4">
-          <p id="section-8-2.4.1">Failure to check derived attributes allows a signature to be replayed.<a href="#section-8-2.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-9-2.4">
+          <p id="section-9-2.4.1">Failure to check derived attributes allows a signature to be replayed.<a href="#section-9-2.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-8-2.5">
-          <p id="section-8-2.5.1">Signatures could be replayed outside of their vailidty window if not checked.<a href="#section-8-2.5.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-9-2.5">
+          <p id="section-9-2.5.1">Signatures could be replayed outside of their vailidty window if not checked.<a href="#section-9-2.5.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="Privacy">
-<section id="section-9">
+<section id="section-10">
       <h2 id="name-privacy-considerations">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<p id="section-9-1">[[ TBD. ]]<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-10-1">[[ TBD. ]]<a href="#section-10-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-9-2.1">
-          <p id="section-9-2.1.1">Re-use of a public-key for tokens at multiple RS's can allow tracking of a client/user combination based on the key identity.<a href="#section-9-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-10-2.1">
+          <p id="section-10-2.1.1">Re-use of a public-key for tokens at multiple RS's can allow tracking of a client/user combination based on the key identity.<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="sec-combined-references">
-<section id="section-10">
+<section id="section-11">
       <h2 id="name-references">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <div id="sec-normative-references">
-<section id="section-10.1">
+<section id="section-11.1">
         <h3 id="name-normative-references">
-<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="BCP195">[BCP195]</dt>
@@ -1789,6 +1831,10 @@ Signature: sig1=:o+Fy/a6IIWhHwnMFhsHqfXEpheWGBMOU3pheT50zA8rL5F8Nur\
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC8032">[RFC8032]</dt>
+        <dd>
+<span class="refAuthor">Josefsson, S.</span> and <span class="refAuthor">I. Liusvaara</span>, <span class="refTitle">"Edwards-Curve Digital Signature Algorithm (EdDSA)"</span>, <span class="seriesInfo">RFC 8032</span>, <span class="seriesInfo">DOI 10.17487/RFC8032</span>, <time datetime="2017-01" class="refDate">January 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8032">https://www.rfc-editor.org/rfc/rfc8032</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
@@ -1805,9 +1851,9 @@ Signature: sig1=:o+Fy/a6IIWhHwnMFhsHqfXEpheWGBMOU3pheT50zA8rL5F8Nur\
 </section>
 </div>
 <div id="sec-informative-references">
-<section id="section-10.2">
+<section id="section-11.2">
         <h3 id="name-informative-references">
-<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="I-D.ietf-oauth-client-id-metadata-document">[I-D.ietf-oauth-client-id-metadata-document]</dt>
@@ -1834,41 +1880,52 @@ Signature: sig1=:o+Fy/a6IIWhHwnMFhsHqfXEpheWGBMOU3pheT50zA8rL5F8Nur\
       </h2>
 <ul class="normal">
 <li class="normal" id="appendix-A-1.1">
-          <p id="appendix-A-1.1.1">-02<a href="#appendix-A-1.1.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-1.1.1">-03<a href="#appendix-A-1.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-A-1.1.2.1">
-              <p id="appendix-A-1.1.2.1.1">Editorial fixes<a href="#appendix-A-1.1.2.1.1" class="pilcrow">¶</a></p>
+              <p id="appendix-A-1.1.2.1.1">Added co-authors<a href="#appendix-A-1.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="appendix-A-1.1.2.2">
-              <p id="appendix-A-1.1.2.2.1">Added example of client registration metadata parameter in CIMD<a href="#appendix-A-1.1.2.2.1" class="pilcrow">¶</a></p>
+              <p id="appendix-A-1.1.2.2.1">Changed inline key presentation from header to signature parameter<a href="#appendix-A-1.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </li>
         <li class="normal" id="appendix-A-1.2">
-          <p id="appendix-A-1.2.1">-01<a href="#appendix-A-1.2.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-1.2.1">-02<a href="#appendix-A-1.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-A-1.2.2.1">
-              <p id="appendix-A-1.2.2.1.1">Added key binding semantics<a href="#appendix-A-1.2.2.1.1" class="pilcrow">¶</a></p>
+              <p id="appendix-A-1.2.2.1.1">Editorial fixes<a href="#appendix-A-1.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="appendix-A-1.2.2.2">
-              <p id="appendix-A-1.2.2.2.1">Updated references<a href="#appendix-A-1.2.2.2.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="appendix-A-1.2.2.3">
-              <p id="appendix-A-1.2.2.3.1">Updated presentation requirements<a href="#appendix-A-1.2.2.3.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="appendix-A-1.2.2.4">
-              <p id="appendix-A-1.2.2.4.1">Added appendix for potential future work<a href="#appendix-A-1.2.2.4.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="appendix-A-1.2.2.5">
-              <p id="appendix-A-1.2.2.5.1">Added some basic security and privacy considerations, to be expanded upon group discussion<a href="#appendix-A-1.2.2.5.1" class="pilcrow">¶</a></p>
+              <p id="appendix-A-1.2.2.2.1">Added example of client registration metadata parameter in CIMD<a href="#appendix-A-1.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </li>
         <li class="normal" id="appendix-A-1.3">
-          <p id="appendix-A-1.3.1">-00<a href="#appendix-A-1.3.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-1.3.1">-01<a href="#appendix-A-1.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-A-1.3.2.1">
-              <p id="appendix-A-1.3.2.1.1">Initial individual draft.<a href="#appendix-A-1.3.2.1.1" class="pilcrow">¶</a></p>
+              <p id="appendix-A-1.3.2.1.1">Added key binding semantics<a href="#appendix-A-1.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A-1.3.2.2">
+              <p id="appendix-A-1.3.2.2.1">Updated references<a href="#appendix-A-1.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A-1.3.2.3">
+              <p id="appendix-A-1.3.2.3.1">Updated presentation requirements<a href="#appendix-A-1.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A-1.3.2.4">
+              <p id="appendix-A-1.3.2.4.1">Added appendix for potential future work<a href="#appendix-A-1.3.2.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-A-1.3.2.5">
+              <p id="appendix-A-1.3.2.5.1">Added some basic security and privacy considerations, to be expanded upon group discussion<a href="#appendix-A-1.3.2.5.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li class="normal" id="appendix-A-1.4">
+          <p id="appendix-A-1.4.1">-00<a href="#appendix-A-1.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A-1.4.2.1">
+              <p id="appendix-A-1.4.2.1.1">Initial individual draft.<a href="#appendix-A-1.4.2.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </li>
@@ -1923,8 +1980,16 @@ Signature: sig1=:o+Fy/a6IIWhHwnMFhsHqfXEpheWGBMOU3pheT50zA8rL5F8Nur\
 </div>
 </section>
 </div>
-<div id="authors-addresses">
+<div id="test-vectors">
 <section id="appendix-C">
+      <h2 id="name-test-vectors">
+<a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-test-vectors" class="section-name selfRef">Test Vectors</a>
+      </h2>
+<p id="appendix-C-1">[[ Editor's note: we really should have end-to-end test vectors with keys and stuff all in here, not just inline. ]]<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-D">
       <h2 id="name-authors-addresses">
 <a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>
