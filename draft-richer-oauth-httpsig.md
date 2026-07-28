@@ -405,7 +405,7 @@ For example, the following signed request includes a signature with the needed s
 In order for a request protected by an HTTP Message Signature bound access token to be considered valid, the RS MUST perform the following checks:
 
 - The presented signature validates using the key the token is bound to
-- For a `jwk` confirmation, the signature validates under the JWS algorithm named by the JWK's `alg` member, applied as described in {{Section 3.3.7 of HTTPSIG}}
+- For a `jwk` confirmation, the signature validates under the HTTP_VERIFY application of the JWS algorithm named by the JWK's `alg` member, applied as described in {{Section 3.3.7 of HTTPSIG}}
 - For an `htsk` confirmation, the signature validates under the HTTP_VERIFY primitive of the named "HTTP Signature Algorithms" entry
 - The `created` value is not too far in the past (e.g. 30 seconds to account for clock skew and network delays)
 - The `nonce` value has not been previously used within the time validity window of this request
