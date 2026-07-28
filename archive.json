@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-26T02:54:22.386524+00:00",
+  "timestamp": "2026-07-28T02:38:23.520945+00:00",
   "repo": "jricher/draft-richer-oauth-httpsig",
   "labels": [
     {
@@ -62,9 +62,17 @@
       "labels": [],
       "body": "Either:\n - use `jkt` for both pre-registered and inline\n - use `jkt` for inline and `kid` for pre-registered",
       "createdAt": "2026-07-25T20:57:58Z",
-      "updatedAt": "2026-07-25T20:57:58Z",
+      "updatedAt": "2026-07-27T10:40:10Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "body": "And corollary for introspection",
+          "createdAt": "2026-07-27T10:40:10Z",
+          "updatedAt": "2026-07-27T10:40:10Z"
+        }
+      ]
     },
     {
       "number": 4,
@@ -81,6 +89,44 @@
       "updatedAt": "2026-07-25T21:01:16Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 7,
+      "id": "I_kwDOTI9Xz88AAAABKWr5lA",
+      "title": "[stashed] Ideas for using only one algorithm namespace",
+      "url": "https://github.com/jricher/draft-richer-oauth-httpsig/issues/7",
+      "state": "OPEN",
+      "author": "panva",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Working through the `pub` signature parameter change and visualizing the whole state, I hit a problem that I think we need to land on a solution for this early. I've written up two ways out and rendered both, so we can compare something concrete rather than argue in the abstract.\n\n- [Option A - lean on HTTPSig](https://panva.github.io/draft-richer-oauth-httpsig/design-a-httpsig-algs/draft-richer-oauth-httpsig.html) - [diff](https://author-tools.ietf.org/api/iddiff?url_1=https://jricher.github.io/draft-richer-oauth-httpsig/draft-richer-oauth-httpsig.txt&url_2=https://panva.github.io/draft-richer-oauth-httpsig/design-a-httpsig-algs/draft-richer-oauth-httpsig.txt)\n- [Option B - lean on JOSE](https://panva.github.io/draft-richer-oauth-httpsig/design-b-jws-algs/draft-richer-oauth-httpsig.html) - [diff](https://author-tools.ietf.org/api/iddiff?url_1=https://jricher.github.io/draft-richer-oauth-httpsig/draft-richer-oauth-httpsig.txt&url_2=https://panva.github.io/draft-richer-oauth-httpsig/design-b-jws-algs/draft-richer-oauth-httpsig.txt)\n\n## The problem\n\nWe currently use two algorithm namespaces at once.\n\nFor pre-registered keys the algorithm comes from the JWK's `alg`, which is a JWS algorithm from the JOSE registry, like `ES256`. But we sign with RFC 9421, whose algorithms come from the \"HTTP Signature Algorithms\" registry, like `ecdsa-p256-sha256`. Two registries, different reviewers, and nothing requiring either to track the other. It looks fine today only because all six RFC 9421 algorithms happen to have a JWS counterpart and the names and signature definitions line up but that's not a guarantee for the future.\n\nIt breaks in two ways.\n\n**Coverage, both directions.** For example RFC 9964 registers the JWS algs `ML-DSA-44/65/87` and there is no HTTP signature algorithm for ML-DSA at all yet, so a client can hand us a valid JWK we have no way to use. The reverse is just as possible: something gets registered for HTTP signatures with no JWS alg and no reason to ever get one, and a pre-registered key then has no way to name it.\n\n**Drift.** RFC 9421 Section 6.2 says each HTTP signature algorithm fully specifies HTTP_SIGN and HTTP_VERIFY, so whoever registers a given algorithm there picks the context string, prehash treatment and signature encoding independently of whatever JOSE picked for a related family JWS alg. Nothing requires them to agree, we won't necessarily notice when they don't, and a divergence could be deliberate and correct for HTTP. So this isn't a matter of watching for mistakes. When it happens we get two algorithms with incompatible definitions, and a spec of ours resorting to have to map one onto the other using some future proof spec-fu language.\n\nI had a version that patched this with an equivalence rule (the two correspond only if same scheme, curve, hash, prehash, padding/salt/context and signature encoding, otherwise no signature). It fails closed, but it makes every implementer do a cryptographic equivalence judgement, which we shouldn't be asking of them. Better to pick one namespace and be done.\n\n## The options\n\n**Option A, lean on HTTPSig, HTTP Signature Algorithms only.** Algorithms come from the RFC 9421 registry and the JOSE algorithms of Section 3.3.7 are not used. A key is the pair (`alg`, `pub`), with a thumbprint over that pair. The client presents its key in the token request under both binding methods, so the two differ only in what the AS does with it: check the thumbprint against a registered one, or accept it by policy. Pre-registration is a single thumbprint, no `jwks`, no `kid`. The key travels to the RS in a new `htsk` confirmation method.\n\n**Option B, lean on JOSE, JWS algorithms only.** Algorithms are the JOSE algorithms of RFC 9421 Section 3.3.7, named by JWS alg values, and `alg` is never used. Pre-registration stays as originally proposed: `kid` into `jwks`/`jwks_uri`, and the JWK's own `alg` gives the algorithm with no translation needed. Runtime introduction carries `jws_alg` (more on this wrinkle below) plus `pub`, which reconstruct a JWK. Reconstruction is defined by key type rather than per algorithm: elliptic curve, Edwards curve, and anything using the AKP key type. The key travels to the RS in the existing RFC 7800 `jwk` confirmation method.\n\n## Comparison\n\n| | A (lean on HTTPSig) | B (lean on JOSE) |\n|---|---|---|\n| Algorithm namespace | RFC 9421 registry | JOSE registry |\n| Algorithm on pre-registration | `alg` inside the thumbprinted pair | JWK `alg` field, used directly |\n| Algorithm on runtime introduction | `alg` signature parameter | `jws_alg` signature parameter |\n| Key on pre-registration | presented in the request, checked against a thumbprint | `keyid` dereferenced against `jwks`/`jwks_uri` `kid` values |\n| Key on runtime introduction | `pub` signature parameter | `pub` signature parameter |\n| Client metadata | `httpsig_bound_access_token_thumbprint` | `httpsig_bound_access_token_kid` (unchanged) |\n| Token request shape | identical in both modes | differs by mode |\n| Token binding | new `htsk` confirmation method | existing RFC 7800 `jwk` |\n| New IANA registrations | `pub` parameter, `htsk` confirmation method, client metadata field, thumbprint | `jws_alg` and `pub` parameters |\n| Algorithms available today | `ecdsa-p256-sha256`, `ecdsa-p384-sha384`, `ed25519` | ECDSA (4 curves), Ed25519, Ed448, ML-DSA |\n| Post-quantum | needs a registration (somewhat in progress already) | works today via RFC 9964 |\n| Extending to new algorithms | would need a `pub` encoding defined | given by JOSE WG |\n\n## Pros and cons\n\n**A, in favour**\n\n- One namespace, and the mapping problem cannot surface in any form.\n- The thumbprint covers the algorithm identifier, so a registered thumbprint pins the algorithm as well as the key. Algorithm substitution on a pre-registered key is impossible by construction, which is a direct answer to RFC 9421 Section 7.3.6.\n- Both binding methods produce the same bytes on the wire, so there is one token request shape and one AS parser.\n- The document stays a pure RFC 9421 profile with no JOSE JWA implementation dependency in the signing path.\n- its \"pub\" and thumbprint can be extracted to a standalone extension for RFC9421 that we could just reference\n\n**A, against**\n\n- It invents a key structure, a thumbprint construction, a confirmation method and a client metadata field. That is four registrations and an obvious \"why not just use a JWK?\" from reviewers.\n- A future new JWK kty would need a definition for our \"pub\".\n- A new confirmation method means RS implementations cannot reuse their DPoP or mTLS plumbing.\n- Pre-registration becomes a thumbprint announcement, not a key announcement.\n\n**B, in favour**\n\n- Nothing new is invented for the token binding: RFC 7800's `jwk` is already what DPoP-adjacent code expects.\n- Reconstruction by key type is open-ended. Because AKP names its algorithm in the key and is defined for algorithms \"not limited to those registered in this document\", any future algorithm with an AKP representation works with no change here, e.g.: FN-DSA algs would just work.\n- The JWK's `alg` needs no translation, which is the whole point.\n\n**B, against**\n\n- **`jws_alg` goes against the spirit of RFC 9421 and may be a roadblock.** Section 3.3.7 says the `alg` signature parameter \"is not used at all when using JOSE signing algorithms\". Adding a parallel parameter to name the JOSE algorithm puts runtime algorithm signalling straight back into the path that RFC 9421 deliberately took it out of. It is legal, since Section 6.3 lets us register new metadata parameters, but the registration is expert review and I would expect pushback. Without it runtime key introduction has no way to name its algorithm.\n- Two wire shapes for the two binding methods, so the AS has two code paths and two sets of failure conditions.\n- Verification runs through Section 3.3.7 of RFC9421 rather than a registered algorithm, so HTTP_SIGN and HTTP_VERIFY are not pinned by a registry entry the way they are for a registered identifier. And while that affordance looks nice on surface the way it is used doesn't mean you can just pick up a JWS/JWT library and validate an HTTP Message Signature, you need access to the JWA primitives.\n- If we ever want a thumbprint here, RFC 7638 does not cover `alg` for EC and OKP keys. It pins the algorithm only because each curve currently maps to one algorithm.\n\n## What I think\n\nI think we should go with A (lean on HTTPSig). It is the more native HTTP Message Signature way of doing this: one namespace, algorithms that are fully specified by the registry entry that names them, and more likelyhood of HTTPSig libraries natively supporting the algs. Both AS methods produce the same bytes, and the thumbprint pins the algorithm as well as the key.\n\nB is a good fallback if the group would rather not invent anything, but we'd need the `jws_alg` question settled with httpbis before we commit to it, not after.",
+      "createdAt": "2026-07-27T15:58:39Z",
+      "updatedAt": "2026-07-27T22:45:54Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "body": "I agree to lean on A as well - httpsig should define and own its namespace. We added the JWS support in the rfc as a way to bridge the gap between ecosystems - basically saying that if you have a jose alg you're happy with, you can use it, and here's how.\n\nThis new work shouldn't really be aligned with jose just because. ",
+          "createdAt": "2026-07-27T16:05:16Z",
+          "updatedAt": "2026-07-27T16:05:16Z"
+        },
+        {
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "body": "Also remember : you're technically allowed to use any algorithm you want so long as your application knows on both ends what to do. The alg parameter is optional, unlike jwt, which helps support that mindset of the application defining the algorithm and the specification providing some interoperable code points. ",
+          "createdAt": "2026-07-27T16:06:47Z",
+          "updatedAt": "2026-07-27T16:06:47Z"
+        },
+        {
+          "author": "panva",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> I agree to lean on A as well\n\nI've worked it further then (just clarifications and fixes and I didn't project those fixes to B)",
+          "createdAt": "2026-07-27T18:14:58Z",
+          "updatedAt": "2026-07-27T18:14:58Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -458,24 +504,26 @@
       "id": "PR_kwDOTI9Xz872YyE5",
       "title": "Inline key presentation",
       "url": "https://github.com/jricher/draft-richer-oauth-httpsig/pull/2",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "jricher",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "- **fix lint**\n- **Extract generatable examples into include files**\n- **Add --runtime-key to embed public key as signature parameters**\n- **Add example regeneration script and regenerate examples**\n- **Update verification examples.**\n- **clean up validation section**\n",
       "createdAt": "2026-07-25T19:47:16Z",
-      "updatedAt": "2026-07-25T21:13:16Z",
+      "updatedAt": "2026-07-27T10:39:43Z",
       "baseRepository": "jricher/draft-richer-oauth-httpsig",
       "baseRefName": "main",
-      "baseRefOid": "1c16368b103a3967ba173aa20a61df3fd6042cc3",
+      "baseRefOid": "1268f1109df9af249fd83e5bd71488e9e51680d6",
       "headRepository": "jricher/draft-richer-oauth-httpsig",
       "headRefName": "inline-key",
-      "headRefOid": "d0b36f758a54bbe401f27da2e6a3d8e22874acc9",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "8e94a9be72fcf9cf3df99756bb2508fd10b44a11",
+      "closedAt": "2026-07-27T10:39:39Z",
+      "mergedAt": "2026-07-27T10:39:39Z",
+      "mergedBy": "jricher",
+      "mergeCommit": {
+        "oid": "4e24ceec1fc2c0c803c7c7843d26f1129f07fb75"
+      },
       "comments": [],
       "reviews": [
         {
@@ -569,6 +617,19 @@
               "updatedAt": "2026-07-25T21:13:16Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHUWmFg",
+          "commit": {
+            "abbreviatedOid": "39a9749"
+          },
+          "author": "panva",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-07-27T10:36:48Z",
+          "updatedAt": "2026-07-27T10:36:48Z",
+          "comments": []
         }
       ]
     },
@@ -577,26 +638,243 @@
       "id": "PR_kwDOTI9Xz872ZpbY",
       "title": "Add Paul Bastian to the authors list",
       "url": "https://github.com/jricher/draft-richer-oauth-httpsig/pull/5",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "paulbastian",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2026-07-25T21:03:30Z",
-      "updatedAt": "2026-07-25T21:03:31Z",
+      "updatedAt": "2026-07-26T16:57:33Z",
       "baseRepository": "jricher/draft-richer-oauth-httpsig",
       "baseRefName": "main",
       "baseRefOid": "1c16368b103a3967ba173aa20a61df3fd6042cc3",
       "headRepository": "jricher/draft-richer-oauth-httpsig",
       "headRefName": "pb/author",
       "headRefOid": "7512d799b6f7bbdee834b9274d9e61edac0a8ad9",
+      "closedAt": "2026-07-26T16:57:29Z",
+      "mergedAt": "2026-07-26T16:57:29Z",
+      "mergedBy": "jricher",
+      "mergeCommit": {
+        "oid": "1268f1109df9af249fd83e5bd71488e9e51680d6"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 6,
+      "id": "PR_kwDOTI9Xz8724b6w",
+      "title": "add Filip Skokan and Christian Bormann to the author list",
+      "url": "https://github.com/jricher/draft-richer-oauth-httpsig/pull/6",
+      "state": "MERGED",
+      "author": "panva",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "... and run `make update-codeowners`",
+      "createdAt": "2026-07-27T11:42:35Z",
+      "updatedAt": "2026-07-27T22:58:06Z",
+      "baseRepository": "jricher/draft-richer-oauth-httpsig",
+      "baseRefName": "main",
+      "baseRefOid": "4e24ceec1fc2c0c803c7c7843d26f1129f07fb75",
+      "headRepository": "panva/draft-richer-oauth-httpsig",
+      "headRefName": "author",
+      "headRefOid": "65250b25133b9efde7adaaefb647c29534eadb91",
+      "closedAt": "2026-07-27T17:46:04Z",
+      "mergedAt": "2026-07-27T17:46:04Z",
+      "mergedBy": "panva",
+      "mergeCommit": {
+        "oid": "94b78f88e19415611c3113540c9af6b49b3f07b8"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHXM1iA",
+          "commit": {
+            "abbreviatedOid": "f7ac948"
+          },
+          "author": "c2bo",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Can i hi-jack your PR to add myself as well? ",
+          "createdAt": "2026-07-27T16:05:30Z",
+          "updatedAt": "2026-07-27T17:38:29Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "```suggestion\ndraft-richer-oauth-httpsig.md ietf@justin.richer.org aaron@parecki.com paul.bastian@posteo.de panva.ip@gmail.com chris.bormann@gmx.de\n```",
+              "createdAt": "2026-07-27T16:05:30Z",
+              "updatedAt": "2026-07-27T17:38:29Z"
+            },
+            {
+              "originalPosition": 8,
+              "body": "```suggestion\n\n - ins: C. Bormann\n    name: Christian Bormann\n    organization: SPRIND\n    email: chris.bormann@gmx.de\n\n```",
+              "createdAt": "2026-07-27T16:07:14Z",
+              "updatedAt": "2026-07-27T17:38:29Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHYAXEg",
+          "commit": {
+            "abbreviatedOid": "b2f74d3"
+          },
+          "author": "panva",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-27T17:44:51Z",
+          "updatedAt": "2026-07-27T17:44:52Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "```suggestion\n  - ins: F. Skokan\n    name: Filip Skokan\n    organization: Okta\n    email: panva.ip@gmail.com\n  - ins: C. Bormann\n    name: Christian Bormann\n    organization: SPRIND\n    email: chris.bormann@gmx.de\n```",
+              "createdAt": "2026-07-27T17:44:52Z",
+              "updatedAt": "2026-07-27T17:44:52Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "id": "PR_kwDOTI9Xz873KgP8",
+      "title": "Rework how keys are represented, named, and bound",
+      "url": "https://github.com/jricher/draft-richer-oauth-httpsig/pull/8",
+      "state": "OPEN",
+      "author": "panva",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Keep each binding method within one algorithm registry. A pre-registered key is a JWK naming a fully specified JWS algorithm. A runtime key names an \"HTTP Signature Algorithms\" value in `alg`.\r\n\r\nReplace the runtime key per-algorithm parameters with a single `pub` signature parameter, defined for ECDSA, Ed25519 and ML-DSA. The bound key MUST be asymmetric.\r\n\r\nSelect a pre-registered key with keyid rather than a pinned httpsig_bound_access_token_kid, so that rotation needs no registration change.\r\n\r\nThe RS takes the key from the token binding, using cnf.jwk or a new HTTP Signature Key (htsk) confirmation method.\r\n\r\n[Rendered](https://panva.github.io/draft-richer-oauth-httpsig/design-c-hybrid/draft-richer-oauth-httpsig.html) | [diff](https://author-tools.ietf.org/api/iddiff?url_1=https://jricher.github.io/draft-richer-oauth-httpsig/draft-richer-oauth-httpsig.txt&url_2=https://panva.github.io/draft-richer-oauth-httpsig/design-c-hybrid/draft-richer-oauth-httpsig.txt)",
+      "createdAt": "2026-07-27T22:56:54Z",
+      "updatedAt": "2026-07-27T23:20:21Z",
+      "baseRepository": "jricher/draft-richer-oauth-httpsig",
+      "baseRefName": "main",
+      "baseRefOid": "94b78f88e19415611c3113540c9af6b49b3f07b8",
+      "headRepository": "panva/draft-richer-oauth-httpsig",
+      "headRefName": "design-c-hybrid",
+      "headRefOid": "6b08a72bfdd19b8d7a8fa44f570b2c42cfe53100",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHaPvpQ",
+          "commit": {
+            "abbreviatedOid": "6b08a72"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-27T23:07:52Z",
+          "updatedAt": "2026-07-27T23:07:52Z",
+          "comments": [
+            {
+              "originalPosition": 78,
+              "body": "Isn't this the correct jwa value? ",
+              "createdAt": "2026-07-27T23:07:52Z",
+              "updatedAt": "2026-07-27T23:07:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHaQL-Q",
+          "commit": {
+            "abbreviatedOid": "6b08a72"
+          },
+          "author": "panva",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-27T23:09:08Z",
+          "updatedAt": "2026-07-27T23:09:09Z",
+          "comments": [
+            {
+              "originalPosition": 78,
+              "body": "It's a [deprecated one](https://www.rfc-editor.org/info/rfc9864/).",
+              "createdAt": "2026-07-27T23:09:08Z",
+              "updatedAt": "2026-07-27T23:10:21Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHaQwdQ",
+          "commit": {
+            "abbreviatedOid": "6b08a72"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-27T23:10:20Z",
+          "updatedAt": "2026-07-27T23:10:20Z",
+          "comments": [
+            {
+              "originalPosition": 78,
+              "body": "Oh nope I'm wrong",
+              "createdAt": "2026-07-27T23:10:20Z",
+              "updatedAt": "2026-07-27T23:10:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHaSs4A",
+          "commit": {
+            "abbreviatedOid": "6b08a72"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-27T23:16:49Z",
+          "updatedAt": "2026-07-27T23:16:50Z",
+          "comments": [
+            {
+              "originalPosition": 315,
+              "body": "```suggestion\n- For a `jwk` confirmation, the signature validates under the HTTP_VERIFY application of the JWS algorithm named by the JWK's `alg` member, applied as described in {{Section 3.3.7 of HTTPSIG}}\n```",
+              "createdAt": "2026-07-27T23:16:50Z",
+              "updatedAt": "2026-07-27T23:16:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHaTw0w",
+          "commit": {
+            "abbreviatedOid": "6b08a72"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "One wording note to call out parallelism between methods but otherwise I think this is really good work. ",
+          "createdAt": "2026-07-27T23:19:48Z",
+          "updatedAt": "2026-07-27T23:19:48Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTI9Xz88AAAABHaT7cA",
+          "commit": {
+            "abbreviatedOid": "6b08a72"
+          },
+          "author": "jricher",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-27T23:20:21Z",
+          "updatedAt": "2026-07-27T23:20:21Z",
+          "comments": [
+            {
+              "originalPosition": 315,
+              "body": "Feel free to propose alternate wording for this one. ",
+              "createdAt": "2026-07-27T23:20:21Z",
+              "updatedAt": "2026-07-27T23:20:21Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
