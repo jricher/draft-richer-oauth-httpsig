@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-28T02:38:23.520945+00:00",
+  "timestamp": "2026-07-30T02:30:34.641590+00:00",
   "repo": "jricher/draft-richer-oauth-httpsig",
   "labels": [
     {
@@ -741,24 +741,26 @@
       "id": "PR_kwDOTI9Xz873KgP8",
       "title": "Rework how keys are represented, named, and bound",
       "url": "https://github.com/jricher/draft-richer-oauth-httpsig/pull/8",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "panva",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Keep each binding method within one algorithm registry. A pre-registered key is a JWK naming a fully specified JWS algorithm. A runtime key names an \"HTTP Signature Algorithms\" value in `alg`.\r\n\r\nReplace the runtime key per-algorithm parameters with a single `pub` signature parameter, defined for ECDSA, Ed25519 and ML-DSA. The bound key MUST be asymmetric.\r\n\r\nSelect a pre-registered key with keyid rather than a pinned httpsig_bound_access_token_kid, so that rotation needs no registration change.\r\n\r\nThe RS takes the key from the token binding, using cnf.jwk or a new HTTP Signature Key (htsk) confirmation method.\r\n\r\n[Rendered](https://panva.github.io/draft-richer-oauth-httpsig/design-c-hybrid/draft-richer-oauth-httpsig.html) | [diff](https://author-tools.ietf.org/api/iddiff?url_1=https://jricher.github.io/draft-richer-oauth-httpsig/draft-richer-oauth-httpsig.txt&url_2=https://panva.github.io/draft-richer-oauth-httpsig/design-c-hybrid/draft-richer-oauth-httpsig.txt)",
       "createdAt": "2026-07-27T22:56:54Z",
-      "updatedAt": "2026-07-27T23:20:21Z",
+      "updatedAt": "2026-07-28T15:09:20Z",
       "baseRepository": "jricher/draft-richer-oauth-httpsig",
       "baseRefName": "main",
       "baseRefOid": "94b78f88e19415611c3113540c9af6b49b3f07b8",
       "headRepository": "panva/draft-richer-oauth-httpsig",
       "headRefName": "design-c-hybrid",
-      "headRefOid": "6b08a72bfdd19b8d7a8fa44f570b2c42cfe53100",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "560c3c58fa7096b1c6efab983fa10310088268a4",
+      "closedAt": "2026-07-28T15:08:02Z",
+      "mergedAt": "2026-07-28T15:08:02Z",
+      "mergedBy": "jricher",
+      "mergeCommit": {
+        "oid": "f67f8baccf454489cd66de04c5f31d84b64c1e2e"
+      },
       "comments": [],
       "reviews": [
         {
